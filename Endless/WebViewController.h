@@ -38,6 +38,8 @@
 - (NSMutableArray *)webViewTabs;
 - (__strong WebViewTab *)curWebViewTab;
 
+- (id)settingsButton;
+
 - (void)viewIsVisible;
 
 - (WebViewTab *)addNewTabForURL:(NSURL *)url;
