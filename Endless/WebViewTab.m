@@ -217,8 +217,8 @@ AppDelegate *appDelegate;
 
 - (void)prepareForNewURL:(NSURL *)URL
 {
-	[self setSecureMode:WebViewTabSecureModeInsecure];
 	[[self applicableHTTPSEverywhereRules] removeAllObjects];
+	[self setSSLCertificate:nil];
 	[self setUrl:URL];
 }
 
@@ -292,7 +292,7 @@ AppDelegate *appDelegate;
 	}
 }
 
-/* this will only fire for top-level requests, not page elements */
+/* this will only fire for top-level requests (and iframes), not page elements */
 - (BOOL)webView:(UIWebView *)__webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
 	NSURL *url = [request URL];
@@ -310,7 +310,8 @@ AppDelegate *appDelegate;
 	}
 
 	if (![[url scheme] isEqualToString:@"endlessipc"]) {
-		[self prepareForNewURL:[request mainDocumentURL]];
+		if ([[[request mainDocumentURL] absoluteString] isEqualToString:[[request URL] absoluteString]])
+			[self prepareForNewURL:[request mainDocumentURL]];
 
 		return YES;
 	}
@@ -427,7 +428,7 @@ AppDelegate *appDelegate;
 - (void)webViewDidFinishLoad:(UIWebView *)__webView
 {
 #ifdef TRACE
-	NSLog(@"[Tab %@] finished loading page/iframe %@", self.tabIndex, [[[__webView request] URL] absoluteString]);
+	NSLog(@"[Tab %@] finished loading page/iframe %@, security level is %lu", self.tabIndex, [[[__webView request] URL] absoluteString], self.secureMode);
 #endif
 	[self setProgress:@1.0];
 	
@@ -487,6 +488,30 @@ AppDelegate *appDelegate;
 #endif
 	
 	[__webView stringByEvaluatingJavaScriptFromString:finalcb];
+}
+
+- (void)setSSLCertificate:(SSLCertificate *)SSLCertificate
+{
+	_SSLCertificate = SSLCertificate;
+	
+	if (_SSLCertificate == nil) {
+#ifdef TRACE
+		NSLog(@"[Tab %@] setting securemode to insecure", self.tabIndex);
+#endif
+		[self setSecureMode:WebViewTabSecureModeInsecure];
+	}
+	else if ([[self SSLCertificate] isEV]) {
+#ifdef TRACE
+		NSLog(@"[Tab %@] setting securemode to ev", self.tabIndex);
+#endif
+		[self setSecureMode:WebViewTabSecureModeSecureEV];
+	}
+	else {
+#ifdef TRACE
+		NSLog(@"[Tab %@] setting securemode to secure", self.tabIndex);
+#endif
+		[self setSecureMode:WebViewTabSecureModeSecure];
+	}
 }
 
 - (void)setProgress:(NSNumber *)pr

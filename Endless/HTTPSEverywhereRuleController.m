@@ -30,10 +30,6 @@
 #import "HTTPSEverywhere.h"
 #import "HTTPSEverywhereRule.h"
 
-@interface HTTPSEverywhereRuleController ()
-
-@end
-
 @implementation HTTPSEverywhereRuleController
 
 - (id)initWithStyle:(UITableViewStyle)style

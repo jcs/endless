@@ -1,6 +1,6 @@
 /*
  * Endless
- * Copyright (c) 2014-2015 joshua stein <jcs@jcs.org>
+ * Copyright (c) 2015 joshua stein <jcs@jcs.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,38 +27,39 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "CKHTTPConnection.h"
 
-#define REWRITTEN_KEY @"_rewritten"
-#define ORIGIN_KEY @"_origin"
-#define WVT_KEY @"_wvt"
+@interface SSLCertificate : NSObject
 
-#define CONTENT_TYPE_OTHER	0
-#define CONTENT_TYPE_HTML	1
-#define CONTENT_TYPE_JAVASCRIPT	2
-#define CONTENT_TYPE_IMAGE	3
+/* Relative Distinguished Name (RDN) table */
+#define X509_KEY_CN	@"Common Name (CN)"
+#define X509_KEY_O	@"Organization (O)"
+#define X509_KEY_OU	@"Organizational Unit Number (OU)"
+#define X509_KEY_L	@"Locality (L)"
+#define X509_KEY_ST	@"State/Province (ST)"
+#define X509_KEY_C	@"Country (C)"
+#define X509_KEY_SN	@"Serial Number (SN)"
 
-#define ENCODING_DEFLATE	1
-#define ENCODING_GZIP		2
+#define X509_KEY_STREET	@"Street Address"
+#define X509_KEY_ZIP	@"Postal Code"
+#define X509_KEY_SERIAL	@"Serial Number"
+#define X509_KEY_BUSCAT	@"Business Category"
 
-@interface URLInterceptor : NSURLProtocol <CKHTTPConnectionDelegate> {
-	NSMutableData *_data;
-	NSURLRequest *_request;
-	NSUInteger encoding;
-	NSUInteger contentType;
-	Boolean firstChunk;
-}
+@property (strong, readonly) NSDictionary *oids;
 
-@property (strong) NSURLRequest *actualRequest;
-@property (assign) BOOL isOrigin;
-@property (strong) NSString *evOrgName;
-@property (strong) CKHTTPConnection *connection;
+@property (strong, readonly) NSNumber *version;
+@property (strong, readonly) NSString *serialNumber;
+@property (strong, readonly) NSString *signatureAlgorithm;
+@property (strong, readonly) NSDictionary *issuer;
+@property (strong, readonly) NSDate *validityNotBefore;
+@property (strong, readonly) NSDate *validityNotAfter;
+@property (strong, readonly) NSDictionary *subject;
 
-+ (NSString *)javascriptToInject;
-+ (void)setBlockIntoLocalNets:(BOOL)val;
-+ (void)setSendDNT:(BOOL)val;
-+ (void)temporarilyAllow:(NSURL *)url;
+@property (readonly) BOOL isEV;
+@property (strong, readonly) NSString *evOrgName;
 
-- (NSMutableData *)data;
+- (id)initWithSecTrustRef:(SecTrustRef)secTrustRef;
+- (id)initWithData:(NSData *)data;
+- (BOOL)isExpired;
+- (BOOL)hasWeakSignatureAlgorithm;
 
 @end
