@@ -32,7 +32,7 @@
 @property (strong) NSURLRequest *actualRequest;
 @property (assign) BOOL isOrigin;
 @property (strong) NSString *evOrgName;
-@property (strong) CKHTTPConnection *connection;
+@property (strong) NSURLConnection *connection;
 @property (strong) HostSettings *hostSettings;
 @property (strong) HostSettings *originHostSettings;
 @property (strong, nonatomic) NSString *cspNonce;

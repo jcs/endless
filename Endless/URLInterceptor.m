@@ -224,19 +224,6 @@ static NSString *_javascriptToInject;
 	return self;
 }
 
-- (NSMutableData *)data
-{
-	return _data;
-}
-
-- (void)appendData:(NSData *)newData
-{
-	if (_data == nil)
-		_data = [[NSMutableData alloc] initWithData:newData];
-	else
-		[_data appendData:newData];
-}
-
 /*
  * We now have our request allocated and need to create a connection for it.
  * Set our User-Agent back to a default (without its per-tab hash) and check our URL blocker to see if we should even bother with this request.
@@ -350,8 +337,7 @@ static NSString *_javascriptToInject;
 	/* remember that we saw this to avoid a loop */
 	[NSURLProtocol setProperty:@YES forKey:REWRITTEN_KEY inRequest:newRequest];
 	
-	CKHTTPConnection *con = [CKHTTPConnection connectionWithRequest:newRequest delegate:self];
-	[self setConnection:con];
+	[self setConnection:[NSURLConnection connectionWithRequest:newRequest delegate:self]];
 }
 
 - (void)stopLoading
@@ -359,23 +345,89 @@ static NSString *_javascriptToInject;
 	[self.connection cancel];
 }
 
-/*
- * CKHTTPConnection has established a connection (possibly with our TLS options), sent our request, and gotten a response.
- * Handle different types of content, inject JavaScript overrides, set fake CSP for WebView to process internally, etc.
- * Note that at this point, [self request] may be stale, so use [self actualRequest]
- */
-- (void)HTTPConnection:(CKHTTPConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response
+- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(nonnull NSURLAuthenticationChallenge *)challenge
 {
+	if (![[[[[self request] URL] scheme] lowercaseString] isEqualToString:@"https"])
+		return;
+	
+	SecTrustRef trust = [[challenge protectionSpace] serverTrust];
+	if (trust != nil) {
+		SSLCertificate *cert = [[SSLCertificate alloc] initWithSecTrustRef:trust];
+#if 0
+		SSLContextRef sslContext = (__bridge SSLContextRef)[theStream propertyForKey:(__bridge NSString *)kCFStreamPropertySSLContext];
+		SSLProtocol proto;
+		SSLGetNegotiatedProtocolVersion(sslContext, &proto);
+		[cert setNegotiatedProtocol:proto];
+		
+		SSLCipherSuite cipher;
+		SSLGetNegotiatedCipher(sslContext, &cipher);
+		[cert setNegotiatedCipher:cipher];
+#endif
+		
+		if (self.isOrigin)
+			[wvt setSSLCertificate:cert];
+	}
+	
+	[[challenge sender] performDefaultHandlingForAuthenticationChallenge:challenge];
+}
+
+- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(nonnull NSURLRequest *)request redirectResponse:(nullable NSURLResponse *)response
+{
+	/* pass along internal rewrites, we'll see them again when the actual request is being made */
+	if (response == nil)
+		return request;
+	
+	NSMutableURLRequest *finalDestination = [request mutableCopy];
+	[NSURLProtocol removePropertyForKey:REWRITTEN_KEY inRequest:finalDestination];
+
+	long statusCode = [(NSHTTPURLResponse *)response statusCode];
+
 #ifdef TRACE
-	NSLog(@"[URLInterceptor] [Tab %@] got HTTP response %ld, content-type %@, length %lld for %@", wvt.tabIndex, (long)[response statusCode], [response MIMEType], [response expectedContentLength], [[[self actualRequest] URL] absoluteString]);
+	NSLog(@"[URLInterceptor] [Tab %@] got HTTP redirect response %ld, content-type %@, length %lld for %@ -> %@", wvt.tabIndex, statusCode, [response MIMEType], [response expectedContentLength], [[response URL] absoluteString], [[finalDestination URL] absoluteString]);
 #endif
 	
+	/* save any cookies we just received */
+	[[appDelegate cookieJar] setCookies:[NSHTTPCookie cookiesWithResponseHeaderFields:[(NSHTTPURLResponse *)response allHeaderFields] forURL:[[self actualRequest] URL]] forURL:[[self actualRequest] URL] mainDocumentURL:[wvt url] forTab:wvt.hash];
+	
+	/* in case of localStorage */
+	[[appDelegate cookieJar] trackDataAccessForDomain:[[response URL] host] fromTab:wvt.hash];
+	
+	if ([[[self.request URL] scheme] isEqualToString:@"https"]) {
+		NSString *hsts = [[(NSHTTPURLResponse *)response allHeaderFields] objectForKey:HSTS_HEADER];
+		if (hsts != nil && ![hsts isEqualToString:@""]) {
+			[[appDelegate hstsCache] parseHSTSHeader:hsts forHost:[[self.request URL] host]];
+		}
+	}
+	
+	if ([wvt secureMode] > WebViewTabSecureModeInsecure && ![[[[[self actualRequest] URL] scheme] lowercaseString] isEqualToString:@"https"]) {
+		/* an element on the page was not sent over https but the initial request was, downgrade to mixed */
+		if ([wvt secureMode] > WebViewTabSecureModeInsecure) {
+			[wvt setSecureMode:WebViewTabSecureModeMixed];
+		}
+	}
+
+	/* if we're being redirected from secure back to insecure, we might be stuck in a loop from an HTTPSEverywhere rule */
+	if ([[[[[self actualRequest] URL] scheme] lowercaseString] isEqualToString:@"https"] && ![[[[finalDestination URL] scheme] lowercaseString] isEqualToString:@"https"])
+		[HTTPSEverywhere noteInsecureRedirectionForURL:[[self actualRequest] URL]];
+	
+	[[self connection] cancel];
+	[[self client] URLProtocol:self wasRedirectedToRequest:finalDestination redirectResponse:response];
+
+	return nil;
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+	long statusCode = [(NSHTTPURLResponse *)response statusCode];
 	encoding = 0;
 	_data = nil;
-	firstChunk = YES;
-
+	
+#ifdef TRACE
+	NSLog(@"[URLInterceptor] [Tab %@] got HTTP response %ld, content-type %@, length %lld for %@", wvt.tabIndex, statusCode, [response MIMEType], [response expectedContentLength], [[[self actualRequest] URL] absoluteString]);
+#endif
+	
 	contentType = CONTENT_TYPE_OTHER;
-	NSString *ctype = [[self caseInsensitiveHeader:@"content-type" inResponse:response] lowercaseString];
+	NSString *ctype = [[self caseInsensitiveHeader:@"content-type" inResponse:(NSHTTPURLResponse *)response] lowercaseString];
 	if (ctype != nil) {
 		if ([ctype hasPrefix:@"text/html"] || [ctype hasPrefix:@"application/html"] || [ctype hasPrefix:@"application/xhtml+xml"])
 			contentType = CONTENT_TYPE_HTML;
@@ -394,13 +446,11 @@ static NSString *_javascriptToInject;
 	else if ([CSPmode isEqualToString:HOST_SETTINGS_CSP_BLOCK_CONNECT])
 		CSPheader = @"connect-src 'none'; media-src 'none'; object-src 'none'; report-uri;";
 	
-	NSString *curCSP = [self caseInsensitiveHeader:@"content-security-policy" inResponse:response];
-	
+	NSString *curCSP = [self caseInsensitiveHeader:@"content-security-policy" inResponse:(NSHTTPURLResponse *)response];
 #ifdef TRACE_HOST_SETTINGS
 	NSLog(@"[HostSettings] [Tab %@] setting CSP for %@ to %@ (via %@) (currently %@)", wvt.tabIndex, [[[self actualRequest] URL] host], CSPmode, [[[self actualRequest] mainDocumentURL] host], curCSP);
 #endif
-
-	NSMutableDictionary *mHeaders = [[NSMutableDictionary alloc] initWithDictionary:[response allHeaderFields]];
+	NSMutableDictionary *mHeaders = [[NSMutableDictionary alloc] initWithDictionary:[(NSHTTPURLResponse *)response allHeaderFields]];
 	
 	/* don't bother rewriting with the header if we don't want a restrictive one (CSPheader) and the site doesn't have one (curCSP) */
 	if (CSPheader != nil || curCSP != nil) {
@@ -415,7 +465,7 @@ static NSString *_javascriptToInject;
 		};
 
 		for (id h in [mHeaders allKeys]) {
-			NSString *hv = (NSString *)[[response allHeaderFields] valueForKey:h];
+			NSString *hv = (NSString *)[[(NSHTTPURLResponse *)response allHeaderFields] valueForKey:h];
 			
 			if ([[h lowercaseString] isEqualToString:@"content-security-policy"] || [[h lowercaseString] isEqualToString:@"x-webkit-csp"]) {
 				if ([CSPmode isEqualToString:HOST_SETTINGS_CSP_STRICT])
@@ -445,11 +495,11 @@ static NSString *_javascriptToInject;
 		NSLog(@"[HostSettings] [Tab %@] CSP header is now %@", wvt.tabIndex, foundCSP);
 #endif
 	}
-
-	response = [[NSHTTPURLResponse alloc] initWithURL:[response URL] statusCode:[response statusCode] HTTPVersion:@"1.1" headerFields:mHeaders];
+	
+	response = [[NSHTTPURLResponse alloc] initWithURL:[response URL] statusCode:[(NSHTTPURLResponse *)response statusCode] HTTPVersion:@"1.1" headerFields:mHeaders];
 	
 	/* save any cookies we just received */
-	[[appDelegate cookieJar] setCookies:[NSHTTPCookie cookiesWithResponseHeaderFields:[response allHeaderFields] forURL:[[self actualRequest] URL]] forURL:[[self actualRequest] URL] mainDocumentURL:[wvt url] forTab:wvt.hash];
+	[[appDelegate cookieJar] setCookies:[NSHTTPCookie cookiesWithResponseHeaderFields:[(NSHTTPURLResponse *)response allHeaderFields] forURL:[[self actualRequest] URL]] forURL:[[self actualRequest] URL] mainDocumentURL:[wvt url] forTab:wvt.hash];
 	
 	/* in case of localStorage */
 	[[appDelegate cookieJar] trackDataAccessForDomain:[[response URL] host] fromTab:wvt.hash];
@@ -468,113 +518,33 @@ static NSString *_javascriptToInject;
 		}
 	}
 	
-	/* handle HTTP-level redirects */
-	if ((response.statusCode == 301) || (response.statusCode == 302) || (response.statusCode == 303) || (response.statusCode == 307)) {
-		NSString *newURL = [self caseInsensitiveHeader:@"location" inResponse:response];
-		if (newURL == nil || [newURL isEqualToString:@""])
-			NSLog(@"[URLInterceptor] [Tab %@] got %ld redirect at %@ but no location header", wvt.tabIndex, (long)response.statusCode, [[self actualRequest] URL]);
-		else {
-			NSMutableURLRequest *newRequest = [[NSMutableURLRequest alloc] init];
-
-			/* 307 redirects are supposed to retain the method when redirecting but others should go back to GET */
-			if (response.statusCode == 307)
-				[newRequest setHTTPMethod:[[self actualRequest] HTTPMethod]];
-			else
-				[newRequest setHTTPMethod:@"GET"];
-			
-			[newRequest setHTTPShouldUsePipelining:YES];
-			
-			/* strangely, if we pass [NSURL URLWithString:/ relativeToURL:[NSURL https://blah/asdf/]] as the URL for the new request, it treats it as just "/" with no domain information so we have to build the relative URL, turn it into a string, then back to a URL */
-			NSString *aURL = [[NSURL URLWithString:newURL relativeToURL:[[self actualRequest] URL]] absoluteString];
-			[newRequest setURL:[NSURL URLWithString:aURL]];
-#ifdef DEBUG
-			NSLog(@"[URLInterceptor] [Tab %@] got %ld redirect from %@ to %@", wvt.tabIndex, (long)response.statusCode, [[[self actualRequest] URL] absoluteString], aURL);
-#endif
-			[newRequest setMainDocumentURL:[[self actualRequest] mainDocumentURL]];
-			
-			[NSURLProtocol setProperty:[NSNumber numberWithLong:wvt.hash] forKey:WVT_KEY inRequest:newRequest];
-
-			/* if we're being redirected from secure back to insecure, we might be stuck in a loop from an HTTPSEverywhere rule */
-			if ([[[[self actualRequest] URL] scheme] isEqualToString:@"https"] && [[[newRequest URL] scheme] isEqualToString:@"http"])
-				[HTTPSEverywhere noteInsecureRedirectionForURL:[[self actualRequest] URL]];
-			
-			/* process it all over again */
-			[NSURLProtocol removePropertyForKey:REWRITTEN_KEY inRequest:newRequest];
-			[[self client] URLProtocol:self wasRedirectedToRequest:newRequest redirectResponse:response];
-		}
-		
-		[[self connection] cancel];
-		[[self client] URLProtocol:self didFailWithError:[NSError errorWithDomain:NSCocoaErrorDomain code:NSUserCancelledError userInfo:@{ ORIGIN_KEY: (self.isOrigin ? @YES : @NO )}]];
-		return;
-	}
-	
-	NSString *content_encoding = [self caseInsensitiveHeader:@"content-encoding" inResponse:response];
-	if (content_encoding != nil) {
-		if ([content_encoding isEqualToString:@"deflate"])
-			encoding = ENCODING_DEFLATE;
-		else if ([content_encoding isEqualToString:@"gzip"])
-			encoding = ENCODING_GZIP;
-		else
-			NSLog(@"[URLInterceptor] [Tab %@] unknown content encoding \"%@\"", wvt.tabIndex, content_encoding);
-	}
-
 	[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowedInMemoryOnly];
 }
 
-- (void)HTTPConnection:(CKHTTPConnection *)connection didReceiveSecTrust:(SecTrustRef)secTrustRef certificate:(SSLCertificate *)certificate
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-	if (self.isOrigin)
-		[wvt setSSLCertificate:certificate];
-}
-
-- (void)HTTPConnection:(CKHTTPConnection *)connection didReceiveData:(NSData *)data {
-	[self appendData:data];
+	NSLog(@"[URLInterceptor] [%lu] got HTTP data with size %lu for %@", self.hash, [data length], [[connection originalRequest] URL]);
 	
-	NSData *newData;
-	if (encoding) {
-		/*
-		 * Try to un-gzip the data we've received so far.  If we get nil (it's incomplete gzip data),
-		 * continue to buffer it before passing it along. If we *can* ungzip it, pass the ugzip'd data
-		 * along and reset the buffer.
-		 */
-		if (encoding == ENCODING_DEFLATE)
-			newData = [_data zlibInflate];
-		else if (encoding == ENCODING_GZIP)
-			newData = [_data gzipInflate];
-	}
-	else
-		newData = [[NSData alloc] initWithBytes:[data bytes] length:[data length]];
-	
-	if (newData != nil) {
-		if (firstChunk) {
-			/* we only need to do injection for top-level docs */
-			if (self.isOrigin) {
-				NSMutableData *tData = [[NSMutableData alloc] init];
-				if (contentType == CONTENT_TYPE_HTML)
-					/* prepend a doctype to force into standards mode and throw in any javascript overrides */
-					[tData appendData:[[NSString stringWithFormat:@"<!DOCTYPE html><script type=\"text/javascript\" nonce=\"%@\">%@</script>", [self cspNonce], [[self class] javascriptToInject]] dataUsingEncoding:NSUTF8StringEncoding]];
-				
-				[tData appendData:newData];
-				newData = tData;
-			}
-
-			firstChunk = NO;
+	if (!firstChunk) {
+		/* we only need to do injection for top-level docs */
+		if (self.isOrigin) {
+			NSMutableData *tData = [[NSMutableData alloc] init];
+			if (contentType == CONTENT_TYPE_HTML)
+				/* prepend a doctype to force into standards mode and throw in any javascript overrides */
+				[tData appendData:[[NSString stringWithFormat:@"<!DOCTYPE html><script type=\"text/javascript\" nonce=\"%@\">%@</script>", [self cspNonce], [[self class] javascriptToInject]] dataUsingEncoding:NSUTF8StringEncoding]];
+			
+			[tData appendData:data];
+			data = tData;
 		}
 		
-		/* clear our running buffer of data for this request */
-		_data = nil;
+		firstChunk = YES;
 	}
 	
-	[self.client URLProtocol:self didLoadData:newData];
+	[self.client URLProtocol:self didLoadData:data];
 }
 
-- (void)HTTPConnectionDidFinishLoading:(CKHTTPConnection *)connection {
-	[self.client URLProtocolDidFinishLoading:self];
-	[self setConnection:nil];
-	_data = nil;
-}
-
-- (void)HTTPConnection:(CKHTTPConnection *)connection didFailWithError:(NSError *)error {
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
 #ifdef TRACE
 	NSLog(@"[URLInterceptor] [Tab %@] failed loading %@: %@", wvt.tabIndex, [[[self actualRequest] URL] absoluteString], error);
 #endif
@@ -584,77 +554,12 @@ static NSString *_javascriptToInject;
 	
 	[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:[error domain] code:[error code] userInfo:ui]];
 	[self setConnection:nil];
-	_data = nil;
 }
 
-- (void)HTTPConnection:(CKHTTPConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-	NSURLCredential *nsuc;
-	
-	/* if we have existing credentials for this realm, try it first */
-	if ([challenge previousFailureCount] == 0) {
-		NSDictionary *d = [[NSURLCredentialStorage sharedCredentialStorage] credentialsForProtectionSpace:[challenge protectionSpace]];
-		if (d != nil) {
-			for (id u in d) {
-				nsuc = [d objectForKey:u];
-				break;
-			}
-		}
-	}
-	
-	/* no credentials, prompt the user */
-	if (nsuc == nil) {
-		dispatch_async(dispatch_get_main_queue(), ^{
-			UIAlertController *uiac = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Authentication Required", nil) message:@"" preferredStyle:UIAlertControllerStyleAlert];
-
-			if ([[challenge protectionSpace] realm] != nil && ![[[challenge protectionSpace] realm] isEqualToString:@""])
-				[uiac setMessage:[NSString stringWithFormat:@"%@: \"%@\"", [[challenge protectionSpace] host], [[challenge protectionSpace] realm]]];
-			else
-				[uiac setMessage:[[challenge protectionSpace] host]];
-			
-			[uiac addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-				textField.placeholder = NSLocalizedString(@"Log In", nil);
-			}];
-			
-			[uiac addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-				 textField.placeholder = NSLocalizedString(@"Password", @"Password");
-				 textField.secureTextEntry = YES;
-			}];
-			
-			[uiac addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-				[[challenge sender] cancelAuthenticationChallenge:challenge];
-				[self.client URLProtocol:self didFailWithError:[NSError errorWithDomain:NSCocoaErrorDomain code:NSUserCancelledError userInfo:@{ ORIGIN_KEY: @YES }]];
-			}]];
-			
-			[uiac addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Log In", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-				UITextField *login = uiac.textFields.firstObject;
-				UITextField *password = uiac.textFields.lastObject;
-
-				NSURLCredential *nsuc = [[NSURLCredential alloc] initWithUser:[login text] password:[password text] persistence:NSURLCredentialPersistenceForSession];
-				[[NSURLCredentialStorage sharedCredentialStorage] setCredential:nsuc forProtectionSpace:[challenge protectionSpace]];
-				
-				[[challenge sender] useCredential:nsuc forAuthenticationChallenge:challenge];
-			}]];
-			
-			[[appDelegate webViewController] presentViewController:uiac animated:YES completion:nil];
-		});
-	}
-	else {
-		[[NSURLCredentialStorage sharedCredentialStorage] setCredential:nsuc forProtectionSpace:[challenge protectionSpace]];
-		[[challenge sender] useCredential:nsuc forAuthenticationChallenge:challenge];
-		
-		/* XXX: crashes in WebCore */
-		//[self.client URLProtocol:self didReceiveAuthenticationChallenge:challenge];
-	}
-}
-
-- (void)HTTPConnection:(CKHTTPConnection *)connection didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-{
-	[self.client URLProtocol:self didCancelAuthenticationChallenge:challenge];
-}
-
-- (void)HTTPConnection:(CKHTTPConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-{
+	[self.client URLProtocolDidFinishLoading:self];
+	self.connection = nil;
 }
 
 - (NSString *)caseInsensitiveHeader:(NSString *)header inResponse:(NSHTTPURLResponse *)response
@@ -705,6 +610,8 @@ static NSString *_javascriptToInject;
  
 @implementation DummyURLInterceptor
 
+static AppDelegate *appDelegate;
+
 + (BOOL)canInitWithRequest:(NSURLRequest *)request
 {
 	if ([NSURLProtocol propertyForKey:REWRITTEN_KEY inRequest:request] != nil)
@@ -726,8 +633,24 @@ static NSString *_javascriptToInject;
 {
 	NSLog(@"[DummyURLInterceptor] [%lu] start loading %@ %@", self.hash, [self.request HTTPMethod], [self.request URL]);
 
+	appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
 	NSMutableURLRequest *newRequest = [self.request mutableCopy];
 	[NSURLProtocol setProperty:@YES forKey:REWRITTEN_KEY inRequest:newRequest];
+	
+#if 0
+	[newRequest setHTTPShouldHandleCookies:NO];
+	
+	NSArray *cookies = [[appDelegate cookieJar] cookiesForURL:[newRequest URL] forTab:self.hash];
+	if (cookies != nil && [cookies count] > 0) {
+#ifdef TRACE_COOKIES
+		NSLog(@"[DummyURLInterceptor] [Tab %lu] sending %lu cookie(s) to %@", (unsigned long)self.hash, [cookies count], [newRequest URL]);
+#endif
+		NSDictionary *headers = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+		[newRequest setAllHTTPHeaderFields:headers];
+	}
+#endif
+	
 	self.connection = [NSURLConnection connectionWithRequest:newRequest delegate:self];
 }
 
@@ -753,7 +676,11 @@ static NSString *_javascriptToInject;
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-	NSLog(@"[DummyURLInterceptor] [%lu] got HTTP response content-type %@, length %lld for %@", self.hash, [response MIMEType], [response expectedContentLength], [[connection originalRequest] URL]);
+	NSLog(@"[DummyURLInterceptor] [%lu] got HTTP response %ld, content-type %@, length %lld for %@", self.hash, [(NSHTTPURLResponse *)response statusCode], [response MIMEType], [response expectedContentLength], [[connection originalRequest] URL]);
+
+	/* save any cookies we just received */
+	[[appDelegate cookieJar] setCookies:[NSHTTPCookie cookiesWithResponseHeaderFields:[(NSHTTPURLResponse *)response allHeaderFields] forURL:[[self request] URL]] forURL:[[self request] URL] mainDocumentURL:[[self request] mainDocumentURL] forTab:self.hash];
+	
 	[self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageAllowed];
 }
 
