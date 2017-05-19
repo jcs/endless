@@ -71,6 +71,8 @@
 		01F8794B1A41232E00A63654 /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 01F8794A1A41232E00A63654 /* credits.html */; };
 		01F8794C1A4124FE00A63654 /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 01F8794A1A41232E00A63654 /* credits.html */; };
 		01FC0E571B38FB6B00955D9A /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01FC0E561B38FB6B00955D9A /* Launch Screen.xib */; };
+		A024D5AE1ECEF10F00B28CC5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A024D5AA1ECEF10F00B28CC5 /* Localizable.strings */; };
+		A024D5AF1ECEF10F00B28CC5 /* OnePasswordExtension.strings in Resources */ = {isa = PBXBuildFile; fileRef = A024D5AC1ECEF10F00B28CC5 /* OnePasswordExtension.strings */; };
 		AA9A5FECA2E668F834FDECD9 /* libPods-Endless.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095BC7BD685DE17FADDBF166 /* libPods-Endless.a */; };
 		D919EA71FF999D55CCC96334 /* libPods-Endless Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FC10255E5E506A0C25D6276B /* libPods-Endless Tests.a */; };
 /* End PBXBuildFile section */
@@ -189,6 +191,10 @@
 		5BC57F74FB0E2BC3CDAB5D1D /* Pods-Endless Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Endless Tests/Pods-Endless Tests.release.xcconfig"; sourceTree = "<group>"; };
 		7AD1EFF778D745256E109B84 /* Pods-Endless.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless.release.xcconfig"; path = "Pods/Target Support Files/Pods-Endless/Pods-Endless.release.xcconfig"; sourceTree = "<group>"; };
 		9E6A896A76F4F163B49219DB /* Pods-Endless.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Endless/Pods-Endless.debug.xcconfig"; sourceTree = "<group>"; };
+		A024D5AB1ECEF10F00B28CC5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Endless/Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A024D5AD1ECEF10F00B28CC5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Endless/Base.lproj/OnePasswordExtension.strings; sourceTree = "<group>"; };
+		A024D5B01ECEF11A00B28CC5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Endless/de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A024D5B11ECEF11A00B28CC5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Endless/de.lproj/OnePasswordExtension.strings; sourceTree = "<group>"; };
 		FC10255E5E506A0C25D6276B /* libPods-Endless Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Endless Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDEC322B35C8D861612E24E3 /* Pods-Endless Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Endless Tests/Pods-Endless Tests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -313,6 +319,8 @@
 		01801EC11A3360B1002B4718 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A024D5AA1ECEF10F00B28CC5 /* Localizable.strings */,
+				A024D5AC1ECEF10F00B28CC5 /* OnePasswordExtension.strings */,
 				01DD9E021E0F151B00C8DF07 /* LICENSE */,
 				01DD9E031E0F151B00C8DF07 /* README.md */,
 				01F8794A1A41232E00A63654 /* credits.html */,
@@ -490,6 +498,7 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
 			);
 			mainGroup = 01801E891A32CA2A002B4718;
 			productRefGroup = 01801E931A32CA2A002B4718 /* Products */;
@@ -513,10 +522,12 @@
 				018333EA1A35746500670CD1 /* https-everywhere_targets.plist in Resources */,
 				018333E91A35746500670CD1 /* https-everywhere_rules.plist in Resources */,
 				01801EC31A3360F8002B4718 /* InAppSettings.bundle in Resources */,
+				A024D5AF1ECEF10F00B28CC5 /* OnePasswordExtension.strings in Resources */,
 				01D7412C1A45F8EB007B7033 /* injected.js in Resources */,
 				01801EA61A32CA2A002B4718 /* Images.xcassets in Resources */,
 				0141D9701E0C9127003472BC /* fabric.apikey in Resources */,
 				01BFEE4A1E3D3CD60069AC83 /* urlblocker.json in Resources */,
+				A024D5AE1ECEF10F00B28CC5 /* Localizable.strings in Resources */,
 				01F8794C1A4124FE00A63654 /* credits.html in Resources */,
 				016B2FCB1A53466D002D2730 /* hsts_preload.plist in Resources */,
 				013E71D01E5150C000BB0572 /* urlblocker.json in Resources */,
@@ -628,7 +639,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		F52C9B85FC42EA46D19EBE17 /* [CP] Embed Pods Frameworks */ = {
@@ -710,6 +721,27 @@
 			targetProxy = 018333DD1A35727C00670CD1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		A024D5AA1ECEF10F00B28CC5 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A024D5AB1ECEF10F00B28CC5 /* Base */,
+				A024D5B01ECEF11A00B28CC5 /* de */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		A024D5AC1ECEF10F00B28CC5 /* OnePasswordExtension.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A024D5AD1ECEF10F00B28CC5 /* Base */,
+				A024D5B11ECEF11A00B28CC5 /* de */,
+			);
+			name = OnePasswordExtension.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		01801EB61A32CA2A002B4718 /* Debug */ = {
