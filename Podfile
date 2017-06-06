@@ -7,9 +7,6 @@ target "Endless" do
   pod "OrderedDictionary"
   pod "XLForm", :git => "https://github.com/jcs/XLForm.git"
   pod "TUSafariActivity"
-
-  pod "Fabric"
-  pod "Crashlytics"
 end
 
 target "Endless Tests" do
