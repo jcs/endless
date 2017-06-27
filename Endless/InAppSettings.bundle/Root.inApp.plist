@@ -151,16 +151,6 @@
 			<string>endlesshttps://github.com/jcs/endless/issues</string>
 		</dict>
 		<dict>
-			<key>Key</key>
-			<string>crash_reporting</string>
-			<key>Title</key>
-			<string>Enable crash reporting</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
 			<key>Title</key>
 			<string>Miscellaneous</string>
 			<key>Type</key>

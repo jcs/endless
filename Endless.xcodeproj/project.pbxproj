@@ -13,8 +13,6 @@
 		0135F47F1A3E548F005A8F16 /* WebViewTab.m in Sources */ = {isa = PBXBuildFile; fileRef = 0135F47E1A3E548F005A8F16 /* WebViewTab.m */; };
 		013E71D01E5150C000BB0572 /* urlblocker.json in Resources */ = {isa = PBXBuildFile; fileRef = 013E71CF1E5150C000BB0572 /* urlblocker.json */; };
 		0141D96A1E0C66F1003472BC /* LocalNetworkChecker_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0141D9691E0C66F1003472BC /* LocalNetworkChecker_Tests.m */; };
-		0141D9701E0C9127003472BC /* fabric.apikey in Resources */ = {isa = PBXBuildFile; fileRef = 0141D96E1E0C9127003472BC /* fabric.apikey */; };
-		0141D9711E0C9127003472BC /* fabric.buildsecret in Resources */ = {isa = PBXBuildFile; fileRef = 0141D96F1E0C9127003472BC /* fabric.buildsecret */; };
 		014E68A51B9BED3300D98A0A /* HostSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 014E68A41B9BED3300D98A0A /* HostSettingsController.m */; };
 		014E68A81B9BEDDC00D98A0A /* HostSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 014E68A71B9BEDDC00D98A0A /* HostSettings.m */; };
 		015748051E208C5000DB2044 /* UIResponder+FirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 015748041E208C5000DB2044 /* UIResponder+FirstResponder.m */; };
@@ -429,7 +427,6 @@
 				01801E901A32CA2A002B4718 /* Resources */,
 				F52C9B85FC42EA46D19EBE17 /* [CP] Embed Pods Frameworks */,
 				82F555D0CE165063CE93824B /* [CP] Copy Pods Resources */,
-				0141D9681E0C44A1003472BC /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -517,7 +514,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0135F4761A3D2931005A8F16 /* SearchEngines.plist in Resources */,
-				0141D9711E0C9127003472BC /* fabric.buildsecret in Resources */,
 				01DD9E041E0F151B00C8DF07 /* LICENSE in Resources */,
 				018333EA1A35746500670CD1 /* https-everywhere_targets.plist in Resources */,
 				018333E91A35746500670CD1 /* https-everywhere_rules.plist in Resources */,
@@ -525,7 +521,6 @@
 				A024D5AF1ECEF10F00B28CC5 /* OnePasswordExtension.strings in Resources */,
 				01D7412C1A45F8EB007B7033 /* injected.js in Resources */,
 				01801EA61A32CA2A002B4718 /* Images.xcassets in Resources */,
-				0141D9701E0C9127003472BC /* fabric.apikey in Resources */,
 				01BFEE4A1E3D3CD60069AC83 /* urlblocker.json in Resources */,
 				A024D5AE1ECEF10F00B28CC5 /* Localizable.strings in Resources */,
 				01F8794C1A4124FE00A63654 /* credits.html in Resources */,
@@ -554,19 +549,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0141D9681E0C44A1003472BC /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "FABRIC_APIKEY_FILE=\"${SRCROOT}/fabric.apikey\"\nFABRIC_BUILDSECRET_FILE=\"${SRCROOT}/fabric.buildsecret\"\n\nFABRIC_APIKEY=$(cat \"$FABRIC_APIKEY_FILE\")\nif test $? -ne 0; then\n  echo \"fabric api key not found at $FABRIC_APIKEY_FILE\"\n  exit 1\nfi\n\nFABRIC_BUILDSECRET=$(cat \"$FABRIC_BUILDSECRET_FILE\")\nif test $? -ne 0; then\n  echo \"fabric build secret not found at $FABRIC_BUILDSECRET_FILE\"\n  exit 1\nfi\n\n\"${PODS_ROOT}/Fabric/run\" \"$FABRIC_APIKEY\" \"$FABRIC_BUILDSECRET\"";
-		};
 		073DA046F186ADB95D7CE9DD /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
