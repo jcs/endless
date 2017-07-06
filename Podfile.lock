@@ -1,6 +1,4 @@
 PODS:
-  - Crashlytics (3.8.4):
-    - Fabric (~> 1.6.3)
   - DTFoundation (1.7.11):
     - DTFoundation/AppKit (= 1.7.11)
     - DTFoundation/Core (= 1.7.11)
@@ -53,7 +51,6 @@ PODS:
     - DTFoundation/Core
   - DTFoundation/UIKit_BlocksAdditions (1.7.11):
     - DTFoundation/Core
-  - Fabric (1.6.11)
   - InAppSettingsKit (2.8.1)
   - OCMock (3.3.1)
   - OrderedDictionary (1.4)
@@ -62,9 +59,7 @@ PODS:
   - XLForm (3.3.0)
 
 DEPENDENCIES:
-  - Crashlytics
   - DTFoundation
-  - Fabric
   - InAppSettingsKit
   - OCMock
   - OrderedDictionary
@@ -87,9 +82,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/jcs/XLForm.git
 
 SPEC CHECKSUMS:
-  Crashlytics: 79e236942ca1e7fc641df1feb9a275360a78ab6a
   DTFoundation: 0ef29c70a9814e15518694862bd739347abe2a50
-  Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
   InAppSettingsKit: 94d2fba3ccd700fc4e32c6d09fabcc0af2426744
   OCMock: f3f61e6eaa16038c30caa5798c5e49d3307b6f22
   OrderedDictionary: 138c8d2e358d3a0c9adda15c6c7db24e8e3b09e6
@@ -97,6 +90,6 @@ SPEC CHECKSUMS:
   WYPopoverController: a9db25ac2841a686acdc0f3a99bdb21545db32f4
   XLForm: d5c391dfc62865927b5bcab0a5a0dbfb3e02b0ec
 
-PODFILE CHECKSUM: 7c340b3779da311674a460917726187bbe2faa18
+PODFILE CHECKSUM: f3963c74c1e2999b5ad52a5f2d1bb92878eaf783
 
 COCOAPODS: 1.2.1
