@@ -260,7 +260,7 @@ NSString * const LABEL = @"L";
 - (UIColor *)colorForMenuTextHighlight
 {
 	if ([[appDelegate webViewController] darkInterface])
-		return [UIColor yellowColor];
+		return [UIColor colorWithRed:1 green:1 blue:0.69f alpha:1];
 	else
 		return [UIColor colorWithRed:0 green:0.5 blue:0 alpha:1];
 }

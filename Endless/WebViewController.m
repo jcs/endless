@@ -371,12 +371,23 @@
 	}
 
 	if (self.darkInterface) {
-		[[appDelegate window] setBackgroundColor:[UIColor darkGrayColor]];
-		[wrapper setBackgroundColor:[UIColor darkGrayColor]];
+		if (HAS_OLED) {
+			[[appDelegate window] setBackgroundColor:[UIColor blackColor]];
+			[wrapper setBackgroundColor:[UIColor blackColor]];
+			
+			[tabScroller setBackgroundColor:[UIColor blackColor]];
+			
+			[toolbar setBackgroundColor:[UIColor blackColor]];
+		}
+		else {
+			[[appDelegate window] setBackgroundColor:[UIColor darkGrayColor]];
+			[wrapper setBackgroundColor:[UIColor darkGrayColor]];
+			
+			[tabScroller setBackgroundColor:[UIColor darkGrayColor]];
+			
+			[toolbar setBackgroundColor:[UIColor darkGrayColor]];
+		}
 		
-		[tabScroller setBackgroundColor:[UIColor darkGrayColor]];
-		
-		[toolbar setBackgroundColor:[UIColor darkGrayColor]];
 		[urlField setBackgroundColor:[UIColor grayColor]];
 		[tabToolbarHairline setBackgroundColor:[UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1.0]];
 
@@ -707,7 +718,7 @@
 	/* TODO: cache curURL and only do anything here if it changed, these changes might be expensive */
 
 	if (self.darkInterface)
-		[urlField setTextColor:[UIColor lightTextColor]];
+		[urlField setTextColor:[UIColor colorWithRed:0.9f green:0.9f blue:0.9f alpha:1.0f]];
 	else
 		[urlField setTextColor:[UIColor darkTextColor]];
 
@@ -964,8 +975,12 @@
 	[popover.theme setOuterShadowColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.75]];
 	[popover.theme setOuterShadowOffset:CGSizeMake(0, 2)];
 	[popover.theme setOverlayColor:[UIColor clearColor]];
-	if ([self darkInterface])
-		[popover.theme setTintColor:[UIColor darkGrayColor]];
+	if ([self darkInterface]) {
+		if (HAS_OLED)
+			[popover.theme setTintColor:[UIColor blackColor]];
+		else
+			[popover.theme setTintColor:[UIColor darkGrayColor]];
+	}
 	[popover endThemeUpdates];
 	
 	[popover presentPopoverFromRect:CGRectMake(settingsButton.frame.origin.x, toolbar.frame.origin.y + settingsButton.frame.origin.y + settingsButton.frame.size.height - 30, settingsButton.frame.size.width, settingsButton.frame.size.height) inView:self.view permittedArrowDirections:WYPopoverArrowDirectionAny animated:YES options:WYPopoverAnimationOptionFadeWithScale];
