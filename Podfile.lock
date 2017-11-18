@@ -55,6 +55,7 @@ PODS:
   - OCMock (3.3.1)
   - OrderedDictionary (1.4)
   - TUSafariActivity (1.0.4)
+  - VForceTouch (0.0.2)
   - WYPopoverController (0.3.9)
   - XLForm (3.3.0)
 
@@ -64,6 +65,7 @@ DEPENDENCIES:
   - OCMock
   - OrderedDictionary
   - TUSafariActivity
+  - VForceTouch
   - WYPopoverController (from `https://github.com/sammcewan/WYPopoverController.git`)
   - XLForm (from `https://github.com/jcs/XLForm.git`)
 
@@ -87,9 +89,10 @@ SPEC CHECKSUMS:
   OCMock: f3f61e6eaa16038c30caa5798c5e49d3307b6f22
   OrderedDictionary: 138c8d2e358d3a0c9adda15c6c7db24e8e3b09e6
   TUSafariActivity: afc55a00965377939107ce4fdc7f951f62454546
+  VForceTouch: b5c3a28625269e1818cf915728173bda9f669d6b
   WYPopoverController: a9db25ac2841a686acdc0f3a99bdb21545db32f4
   XLForm: d5c391dfc62865927b5bcab0a5a0dbfb3e02b0ec
 
-PODFILE CHECKSUM: 3359b4f7681f396088f3af65471008e8f9f85c1f
+PODFILE CHECKSUM: 28b762f3f90ed42095aafd38e1f7f837e9100763
 
 COCOAPODS: 1.3.1

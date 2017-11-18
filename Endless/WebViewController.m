@@ -1,6 +1,6 @@
 /*
  * Endless
- * Copyright (c) 2014-2016 joshua stein <jcs@jcs.org>
+ * Copyright (c) 2014-2017 joshua stein <jcs@jcs.org>
  *
  * See LICENSE file for redistribution terms.
  */
@@ -250,7 +250,7 @@
 #ifdef TRACE
 		NSLog(@"[WebViewController] restoring tab %d with %@", i, params);
 #endif
-		WebViewTab *wvt = [self addNewTabForURL:[params objectForKey:@"url"] forRestoration:YES withCompletionBlock:nil];
+		WebViewTab *wvt = [self addNewTabForURL:[params objectForKey:@"url"] forRestoration:YES withAnimation:WebViewTabAnimationHidden withCompletionBlock:nil];
 		[[wvt title] setText:[params objectForKey:@"title"]];
 	}
 	
@@ -520,10 +520,10 @@
 
 - (WebViewTab *)addNewTabForURL:(NSURL *)url
 {
-	return [self addNewTabForURL:url forRestoration:NO withCompletionBlock:nil];
+	return [self addNewTabForURL:url forRestoration:NO withAnimation:WebViewTabAnimationDefault withCompletionBlock:nil];
 }
 
-- (WebViewTab *)addNewTabForURL:(NSURL *)url forRestoration:(BOOL)restoration withCompletionBlock:(void(^)(BOOL))block
+- (WebViewTab *)addNewTabForURL:(NSURL *)url forRestoration:(BOOL)restoration withAnimation:(WebViewTabAnimation)animation withCompletionBlock:(void(^)(BOOL))block
 {
 	WebViewTab *wvt = [[WebViewTab alloc] initWithFrame:[self frameForTabIndex:webViewTabs.count] withRestorationIdentifier:(restoration ? [url absoluteString] : nil)];
 	[wvt.webView.scrollView setDelegate:self];
@@ -538,10 +538,10 @@
 	[tabScroller addSubview:wvt.viewHolder];
 	[tabScroller bringSubviewToFront:toolbar];
 
-	void (^swapToTab)(BOOL) = ^(BOOL finished) {
+	void (^swapToTab)(BOOL) = ^(BOOL dummy) {
 		[self setCurTabIndex:(int)webViewTabs.count - 1];
 		
-		[self slideToCurrentTabWithCompletionBlock:^(BOOL finished) {
+		[self slideToCurrentTabWithAnimation:animation completionBlock:^(BOOL finished) {
 			if (url != nil)
 				[wvt loadURL:url];
 
@@ -549,19 +549,21 @@
 		}];
 	};
 	
-	if (!restoration) {
-		/* animate zooming out (if not already), switching to the new tab, then zoom back in */
+	if (animation == WebViewTabAnimationHidden) {
+		if (url != nil && !restoration)
+			[wvt loadURL:url];
+		if (block != nil)
+			block(YES);
+	} else {
 		if (showingTabs) {
 			swapToTab(YES);
 		}
 		else if (webViewTabs.count > 1) {
 			[self showTabsWithCompletionBlock:swapToTab];
 		}
-		else if (url != nil) {
-			[wvt loadURL:url];
-		}
-		else if (block != nil)
+		else if (block != nil) {
 			block(YES);
+		}
 	}
 
 	return wvt;
@@ -569,7 +571,7 @@
 
 - (void)addNewTabFromToolbar:(id)_id
 {
-	[self addNewTabForURL:nil forRestoration:NO withCompletionBlock:^(BOOL finished) {
+	[self addNewTabForURL:nil forRestoration:NO withAnimation:WebViewTabAnimationDefault withCompletionBlock:^(BOOL finished) {
 		[urlField becomeFirstResponder];
 	}];
 }
@@ -586,7 +588,7 @@
 	void (^swapToTab)(BOOL) = ^(BOOL finished) {
 		[self setCurTabIndex:[[t tabIndex] intValue]];
 		
-		[self slideToCurrentTabWithCompletionBlock:^(BOOL finished) {
+		[self slideToCurrentTabWithAnimation:WebViewTabAnimationDefault completionBlock:^(BOOL finished) {
 			[self showTabsWithCompletionBlock:nil];
 		}];
 	};
@@ -668,7 +670,7 @@
 			else {
 				/* no tabs left, add one and zoom out */
 				[self reindexTabs];
-				[self addNewTabForURL:nil forRestoration:false withCompletionBlock:^(BOOL finished) {
+				[self addNewTabForURL:nil forRestoration:false withAnimation:WebViewTabAnimationDefault withCompletionBlock:^(BOOL finished) {
 					[urlField becomeFirstResponder];
 				}];
 				return;
@@ -696,7 +698,7 @@
 	} completion:^(BOOL finished) {
 		[self setCurTabIndex:curTabIndex];
 
-		[self slideToCurrentTabWithCompletionBlock:^(BOOL finished) {
+		[self slideToCurrentTabWithAnimation:WebViewTabAnimationDefault completionBlock:^(BOOL finished) {
 			showingTabs = true;
 			[self showTabs:nil];
 		}];
@@ -1117,18 +1119,24 @@
 	}
 }
 
-- (void)slideToCurrentTabWithCompletionBlock:(void(^)(BOOL))block
+- (void)slideToCurrentTabWithAnimation:(WebViewTabAnimation)animation completionBlock:(void(^)(BOOL))block
 {
 	[self updateProgress];
 
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+	void (^moveBlock)(void) = ^{
 		[tabScroller setContentOffset:CGPointMake([self frameForTabIndex:curTabIndex].origin.x, 0) animated:NO];
-	} completion:block];
+	};
+	
+	if (animation == WebViewTabAnimationQuick) {
+		moveBlock();
+		block(YES);
+	} else
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:moveBlock completion:block];
 }
 
 - (IBAction)slideToCurrentTab:(id)_id
 {
-	[self slideToCurrentTabWithCompletionBlock:nil];
+	[self slideToCurrentTabWithAnimation:WebViewTabAnimationDefault completionBlock:nil];
 }
 
 - (NSString *)buildDefaultUserAgent

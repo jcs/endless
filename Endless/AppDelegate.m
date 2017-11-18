@@ -241,7 +241,7 @@
 		}
 		
 		if ([[keyCommand input] isEqualToString:@"t"]) {
-			[[self webViewController] addNewTabForURL:nil forRestoration:NO withCompletionBlock:^(BOOL finished) {
+			[[self webViewController] addNewTabForURL:nil forRestoration:NO withAnimation:WebViewTabAnimationDefault withCompletionBlock:^(BOOL finished) {
 				[[self webViewController] focusUrlField];
 			}];
 			return;

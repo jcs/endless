@@ -12,10 +12,13 @@
 #import "NSString+JavascriptEscape.h"
 #import "UIResponder+FirstResponder.h"
 
+#import "VForceTouchGestureRecognizer.h"
+
 @import WebKit;
 
 @implementation WebViewTab {
 	AppDelegate *appDelegate;
+	BOOL inForceTouch;
 }
 
 + (WebViewTab *)openedWebViewTabByRandID:(NSString *)randID
@@ -114,10 +117,16 @@
 	[self setApplicableHTTPSEverywhereRules:[[NSMutableDictionary alloc] init]];
 	[self setApplicableURLBlockerTargets:[[NSMutableDictionary alloc] init]];
 
-	UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressMenu:)];
+	VForceTouchGestureRecognizer *forceTouch = [[VForceTouchGestureRecognizer alloc] initWithTarget:self action:@selector(pressedMenu:)];
+	[forceTouch setDelegate:self];
+	[forceTouch setPercentMinimalRequest:0.5];
+	inForceTouch = NO;
+	[self.webView addGestureRecognizer:forceTouch];
+	
+	UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(pressedMenu:)];
 	[lpgr setDelegate:self];
-	[_webView addGestureRecognizer:lpgr];
-
+	[self.webView addGestureRecognizer:lpgr];
+	
 	for (UIView *_view in _webView.subviews) {
 		for (UIGestureRecognizer *recognizer in _view.gestureRecognizers) {
 			[recognizer addTarget:self action:@selector(webViewTouched:)];
@@ -591,18 +600,30 @@
 	[[appDelegate webViewController] webViewTouched];
 }
 
-- (void)longPressMenu:(UILongPressGestureRecognizer *)sender {
+- (void)pressedMenu:(UIGestureRecognizer *)event
+{
 	UIAlertController *alertController;
 	NSString *href, *img, *alt;
 	
-	if (sender.state != UIGestureRecognizerStateBegan)
+	if ([event isKindOfClass:[VForceTouchGestureRecognizer class]]) {
+		if ([event state] == UIGestureRecognizerStateBegan) {
+			inForceTouch = YES;
+		} else if ([event state] == UIGestureRecognizerStateChanged) {
+			inForceTouch = YES;
+			return;
+		} else {
+			inForceTouch = NO;
+			return;
+		}
+	} else if (inForceTouch || [event state] != UIGestureRecognizerStateBegan) {
 		return;
-	
+	}
+
 #ifdef TRACE
-	NSLog(@"[Tab %@] long-press gesture recognized", self.tabIndex);
+	NSLog(@"[Tab %@] %@ gesture recognized (%@)", [event class], self.tabIndex, event);
 #endif
 	
-	NSArray *elements = [self elementsAtLocationFromGestureRecognizer:sender];
+	NSArray *elements = [self elementsAtLocationFromGestureRecognizer:event];
 	for (NSDictionary *element in elements) {
 		NSString *k = [element allKeys][0];
 		NSDictionary *attrs = [element objectForKey:k];
@@ -630,8 +651,28 @@
 #endif
 	
 	if (!(href || img)) {
-		sender.enabled = false;
-		sender.enabled = true;
+		event.enabled = false;
+		event.enabled = true;
+		return;
+	}
+	
+	if (inForceTouch) {
+		/* taptic feedback */
+		UINotificationFeedbackGenerator *uinfg = [[UINotificationFeedbackGenerator alloc] init];
+		[uinfg prepare];
+		[uinfg notificationOccurred:UINotificationFeedbackTypeSuccess];
+		
+		NSURL *u;
+		if (href)
+			u = [NSURL URLWithString:href];
+		else if (img)
+			u = [NSURL URLWithString:img];
+
+		if (u) {
+			WebViewTab *newtab = [[appDelegate webViewController] addNewTabForURL:u forRestoration:NO withAnimation:WebViewTabAnimationQuick withCompletionBlock:nil];
+			newtab.openedByTabHash = [NSNumber numberWithLong:self.hash];
+		}
+		
 		return;
 	}
 	
@@ -685,8 +726,8 @@
 	
 	UIPopoverPresentationController *popover = [alertController popoverPresentationController];
 	if (popover) {
-		popover.sourceView = [sender view];
-		CGPoint loc = [sender locationInView:[sender view]];
+		popover.sourceView = [event view];
+		CGPoint loc = [event locationInView:[event view]];
 		/* offset for width of the finger */
 		popover.sourceRect = CGRectMake(loc.x + 35, loc.y, 1, 1);
 		popover.permittedArrowDirections = UIPopoverArrowDirectionAny;

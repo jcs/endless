@@ -17,6 +17,12 @@
 /* this just detects the iPhone X by its notch */
 #define HAS_OLED ([[[[UIApplication sharedApplication] delegate] window] safeAreaInsets].bottom > 0)
 
+typedef NS_ENUM(NSInteger, WebViewTabAnimation) {
+	WebViewTabAnimationDefault,
+	WebViewTabAnimationHidden,
+	WebViewTabAnimationQuick,
+};
+
 @interface WebViewController : UIViewController <UITableViewDelegate, UITextFieldDelegate, UIGestureRecognizerDelegate, UIScrollViewDelegate, IASKSettingsDelegate, WYPopoverControllerDelegate>
 
 @property BOOL toolbarOnBottom;
@@ -33,7 +39,7 @@
 - (void)viewIsNoLongerVisible;
 
 - (WebViewTab *)addNewTabForURL:(NSURL *)url;
-- (WebViewTab *)addNewTabForURL:(NSURL *)url forRestoration:(BOOL)restoration withCompletionBlock:(void(^)(BOOL))block;
+- (WebViewTab *)addNewTabForURL:(NSURL *)url forRestoration:(BOOL)restoration withAnimation:(WebViewTabAnimation)animation withCompletionBlock:(void(^)(BOOL finished))block;
 - (void)switchToTab:(NSNumber *)tabNumber;
 - (void)removeTab:(NSNumber *)tabNumber andFocusTab:(NSNumber *)toFocus;
 - (void)removeTab:(NSNumber *)tabNumber;
