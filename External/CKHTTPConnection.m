@@ -20,7 +20,6 @@
 @interface CKHTTPConnection ()
 - (CFHTTPMessageRef)HTTPRequest;
 - (NSInputStream *)HTTPStream;
-- (NSInputStream *)HTTPBodyStream;
 - (void)start;
 - (id <CKHTTPConnectionDelegate>)delegate;
 @end
