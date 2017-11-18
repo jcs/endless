@@ -18,6 +18,8 @@
 #import "DonationViewController.h"
 #endif
 
+#import "IASKSettingsReader.h"
+
 @implementation WebViewController {
 	AppDelegate *appDelegate;
 	UIView *wrapper;
@@ -189,7 +191,8 @@
 	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 	[center addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
 	[center addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-	
+	[center addObserver:self selector:@selector(settingStaged:) name:kIASKAppSettingChanged object:nil];
+
 	[[appDelegate window] addSubview:self.view];
 
 	[self updateSearchBarDetails];
@@ -1005,6 +1008,21 @@
 		DonationViewController *dvc = [[DonationViewController alloc] initWithNibName:nil bundle:nil];
 		[[sender navigationController] pushViewController:dvc animated:YES];
 #endif
+	}
+}
+	
+- (void)settingStaged:(NSNotification *)notification
+{
+	NSString *prop = [[[notification userInfo] allKeys] firstObject];
+		
+	if ([prop isEqualToString:@"dark_icon"]) {
+		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+		
+		if ([userDefaults boolForKey:@"dark_icon"]) {
+			[[UIApplication sharedApplication] setAlternateIconName:@"BlackIcon-60" completionHandler:nil];
+		} else {
+			[[UIApplication sharedApplication] setAlternateIconName:nil completionHandler:nil];
+		}
 	}
 }
 

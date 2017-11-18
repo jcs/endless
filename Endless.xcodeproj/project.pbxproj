@@ -68,6 +68,10 @@
 		01F8794B1A41232E00A63654 /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 01F8794A1A41232E00A63654 /* credits.html */; };
 		01F8794C1A4124FE00A63654 /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 01F8794A1A41232E00A63654 /* credits.html */; };
 		01FC0E571B38FB6B00955D9A /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01FC0E561B38FB6B00955D9A /* Launch Screen.xib */; };
+		01FE827E1FC0D9C2006E5777 /* BlackIcon-60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 01FE827D1FC0D9C2006E5777 /* BlackIcon-60@3x.png */; };
+		01FE82901FC0DC5F006E5777 /* BlackIcon-60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 01FE828F1FC0DC5E006E5777 /* BlackIcon-60@2x.png */; };
+		01FE82941FC0DC83006E5777 /* BlackIcon-76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 01FE82931FC0DC83006E5777 /* BlackIcon-76@2x.png */; };
+		01FE82961FC0DC94006E5777 /* BlackIcon-83.5@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 01FE82951FC0DC94006E5777 /* BlackIcon-83.5@2x.png */; };
 		A024D5AE1ECEF10F00B28CC5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A024D5AA1ECEF10F00B28CC5 /* Localizable.strings */; };
 		A024D5AF1ECEF10F00B28CC5 /* OnePasswordExtension.strings in Resources */ = {isa = PBXBuildFile; fileRef = A024D5AC1ECEF10F00B28CC5 /* OnePasswordExtension.strings */; };
 		AA9A5FECA2E668F834FDECD9 /* libPods-Endless.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095BC7BD685DE17FADDBF166 /* libPods-Endless.a */; };
@@ -94,8 +98,6 @@
 		0135F47E1A3E548F005A8F16 /* WebViewTab.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewTab.m; sourceTree = "<group>"; };
 		013E71CF1E5150C000BB0572 /* urlblocker.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = urlblocker.json; path = Resources/urlblocker.json; sourceTree = "<group>"; };
 		0141D9691E0C66F1003472BC /* LocalNetworkChecker_Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalNetworkChecker_Tests.m; sourceTree = "<group>"; };
-		0141D96E1E0C9127003472BC /* fabric.apikey */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = fabric.apikey; path = Endless/fabric.apikey; sourceTree = "<group>"; };
-		0141D96F1E0C9127003472BC /* fabric.buildsecret */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = fabric.buildsecret; path = Endless/fabric.buildsecret; sourceTree = "<group>"; };
 		014E68A31B9BED3300D98A0A /* HostSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostSettingsController.h; sourceTree = "<group>"; };
 		014E68A41B9BED3300D98A0A /* HostSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HostSettingsController.m; sourceTree = "<group>"; };
 		014E68A61B9BEDDC00D98A0A /* HostSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostSettings.h; sourceTree = "<group>"; };
@@ -184,6 +186,12 @@
 		01F879471A41141800A63654 /* urlblocker_mock_targets.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = urlblocker_mock_targets.plist; sourceTree = "<group>"; };
 		01F8794A1A41232E00A63654 /* credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = credits.html; path = Endless/Resources/credits.html; sourceTree = "<group>"; };
 		01FC0E561B38FB6B00955D9A /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "Launch Screen.xib"; path = "Endless/Resources/Launch Screen.xib"; sourceTree = "<group>"; };
+		01FE827D1FC0D9C2006E5777 /* BlackIcon-60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BlackIcon-60@3x.png"; sourceTree = "<group>"; };
+		01FE828F1FC0DC5E006E5777 /* BlackIcon-60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BlackIcon-60@2x.png"; sourceTree = "<group>"; };
+		01FE82931FC0DC83006E5777 /* BlackIcon-76@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BlackIcon-76@2x.png"; sourceTree = "<group>"; };
+		01FE82951FC0DC94006E5777 /* BlackIcon-83.5@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BlackIcon-83.5@2x.png"; sourceTree = "<group>"; };
+		01FE82971FC0DEF0006E5777 /* BlackIcon-76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BlackIcon-76.png"; sourceTree = "<group>"; };
+		01FE82981FC0DEF1006E5777 /* BlackIcon-60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BlackIcon-60.png"; sourceTree = "<group>"; };
 		095BC7BD685DE17FADDBF166 /* libPods-Endless.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Endless.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BC57F74FB0E2BC3CDAB5D1D /* Pods-Endless Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Endless Tests/Pods-Endless Tests.release.xcconfig"; sourceTree = "<group>"; };
 		7AD1EFF778D745256E109B84 /* Pods-Endless.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless.release.xcconfig"; path = "Pods/Target Support Files/Pods-Endless/Pods-Endless.release.xcconfig"; sourceTree = "<group>"; };
@@ -316,6 +324,7 @@
 		01801EC11A3360B1002B4718 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				01FE82991FC0DF10006E5777 /* Icons */,
 				A024D5AA1ECEF10F00B28CC5 /* Localizable.strings */,
 				A024D5AC1ECEF10F00B28CC5 /* OnePasswordExtension.strings */,
 				01DD9E021E0F151B00C8DF07 /* LICENSE */,
@@ -381,12 +390,23 @@
 		01B834961E145D3E0050EAB5 /* App-Store-only Files */ = {
 			isa = PBXGroup;
 			children = (
-				0141D96E1E0C9127003472BC /* fabric.apikey */,
-				0141D96F1E0C9127003472BC /* fabric.buildsecret */,
 				01B8348F1E12DC8D0050EAB5 /* DonationViewController.h */,
 				01B834901E12DC8D0050EAB5 /* DonationViewController.m */,
 			);
 			name = "App-Store-only Files";
+			sourceTree = "<group>";
+		};
+		01FE82991FC0DF10006E5777 /* Icons */ = {
+			isa = PBXGroup;
+			children = (
+				01FE82981FC0DEF1006E5777 /* BlackIcon-60.png */,
+				01FE828F1FC0DC5E006E5777 /* BlackIcon-60@2x.png */,
+				01FE827D1FC0D9C2006E5777 /* BlackIcon-60@3x.png */,
+				01FE82971FC0DEF0006E5777 /* BlackIcon-76.png */,
+				01FE82931FC0DC83006E5777 /* BlackIcon-76@2x.png */,
+				01FE82951FC0DC94006E5777 /* BlackIcon-83.5@2x.png */,
+			);
+			path = Icons;
 			sourceTree = "<group>";
 		};
 		6CC21620E2AE7B4037C6401B /* Frameworks */ = {
@@ -515,6 +535,7 @@
 				0135F4761A3D2931005A8F16 /* SearchEngines.plist in Resources */,
 				01DD9E041E0F151B00C8DF07 /* LICENSE in Resources */,
 				018333EA1A35746500670CD1 /* https-everywhere_targets.plist in Resources */,
+				01FE82961FC0DC94006E5777 /* BlackIcon-83.5@2x.png in Resources */,
 				018333E91A35746500670CD1 /* https-everywhere_rules.plist in Resources */,
 				01801EC31A3360F8002B4718 /* InAppSettings.bundle in Resources */,
 				A024D5AF1ECEF10F00B28CC5 /* OnePasswordExtension.strings in Resources */,
@@ -523,7 +544,10 @@
 				01BFEE4A1E3D3CD60069AC83 /* urlblocker.json in Resources */,
 				A024D5AE1ECEF10F00B28CC5 /* Localizable.strings in Resources */,
 				01F8794C1A4124FE00A63654 /* credits.html in Resources */,
+				01FE82941FC0DC83006E5777 /* BlackIcon-76@2x.png in Resources */,
+				01FE82901FC0DC5F006E5777 /* BlackIcon-60@2x.png in Resources */,
 				016B2FCB1A53466D002D2730 /* hsts_preload.plist in Resources */,
+				01FE827E1FC0D9C2006E5777 /* BlackIcon-60@3x.png in Resources */,
 				01FC0E571B38FB6B00955D9A /* Launch Screen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -602,8 +626,8 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Endless/Pods-Endless-resources.sh",
-				"$PODS_CONFIGURATION_BUILD_DIR/InAppSettingsKit/InAppSettingsKit.bundle",
-				"$PODS_CONFIGURATION_BUILD_DIR/TUSafariActivity/TUSafariActivity.bundle",
+				$PODS_CONFIGURATION_BUILD_DIR/InAppSettingsKit/InAppSettingsKit.bundle,
+				$PODS_CONFIGURATION_BUILD_DIR/TUSafariActivity/TUSafariActivity.bundle,
 				"${PODS_ROOT}/XLForm/XLForm/XLForm.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
