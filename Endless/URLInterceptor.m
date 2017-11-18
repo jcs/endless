@@ -27,6 +27,14 @@
 static AppDelegate *appDelegate;
 static BOOL sendDNT = true;
 static NSMutableArray *tmpAllowed;
+static NSCache *injectCache;
+
+#define INJECT_CACHE_SIZE 20
+
++ (void)setup
+{
+	[[NSNotificationCenter defaultCenter] addObserver:[URLInterceptor class] selector:@selector(clearInjectCache) name:HOST_SETTINGS_CHANGED object:nil];
+}
 
 static NSString *_javascriptToInject;
 + (NSString *)javascriptToInject
@@ -37,6 +45,37 @@ static NSString *_javascriptToInject;
 	}
 	
 	return _javascriptToInject;
+}
+
++ (void)clearInjectCache
+{
+	if (injectCache != nil)
+		[injectCache removeAllObjects];
+}
+
++ (NSString *)javascriptToInjectForURL:(NSURL *)url
+{
+	if (injectCache == nil) {
+		injectCache = [[NSCache alloc] init];
+		[injectCache setCountLimit:INJECT_CACHE_SIZE];
+	}
+	
+	NSString *c = [injectCache objectForKey:[url host]];
+	if (c != nil)
+		return c;
+	
+	NSString *j = [self javascriptToInject];
+	HostSettings *hs = [HostSettings settingsOrDefaultsForHost:[url host]];
+	
+	NSString *block_rtc = @"true";
+	if ([hs boolSettingOrDefault:HOST_SETTINGS_KEY_ALLOW_WEBRTC])
+		block_rtc = @"false";
+
+	j = [j stringByReplacingOccurrencesOfString:@"\"##BLOCK_WEBRTC##\"" withString:block_rtc];
+	
+	[injectCache setObject:j forKey:[url host]];
+
+	return j;
 }
 
 + (void)setSendDNT:(BOOL)val
@@ -569,7 +608,7 @@ static NSString *_javascriptToInject;
 				NSMutableData *tData = [[NSMutableData alloc] init];
 				if (contentType == CONTENT_TYPE_HTML)
 					/* prepend a doctype to force into standards mode and throw in any javascript overrides */
-					[tData appendData:[[NSString stringWithFormat:@"<!DOCTYPE html><script type=\"text/javascript\" nonce=\"%@\">%@</script>", [self cspNonce], [[self class] javascriptToInject]] dataUsingEncoding:NSUTF8StringEncoding]];
+					[tData appendData:[[NSString stringWithFormat:@"<!DOCTYPE html><script type=\"text/javascript\" nonce=\"%@\">%@</script>", [self cspNonce], [[self class] javascriptToInjectForURL:[[self actualRequest] mainDocumentURL]]] dataUsingEncoding:NSUTF8StringEncoding]];
 				
 				[tData appendData:newData];
 				newData = tData;

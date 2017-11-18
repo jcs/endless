@@ -198,8 +198,24 @@
 			[section setFooterTitle:([host isDefault]
                                      ? NSLocalizedString(@"Allow hosts to permanently store cookies and local storage databases", nil)
                                      : NSLocalizedString(@"Allow this host to permanently store cookies and local storage databases", nil))
-             ];
+			];
 			[section addFormRow:row];
+			[form addFormSection:section];
+		}
+		
+		/* allow webRTC */
+		{
+			XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:HOST_SETTINGS_KEY_ALLOW_WEBRTC rowType:XLFormRowDescriptorTypeSelectorActionSheet title:NSLocalizedString(@"Allow WebRTC", nil)];
+			[self setYesNoSelectorOptionsForSetting:HOST_SETTINGS_KEY_ALLOW_WEBRTC host:host row:row withDefault:(![host isDefault])];
+			
+			section = [XLFormSectionDescriptor formSection];
+			[section setTitle:@""];
+			[section setFooterTitle:([host isDefault]
+						 ? NSLocalizedString(@"Allow hosts to access WebRTC functions", nil)
+						 : NSLocalizedString(@"Allow this host to access WebRTC functions", nil))
+			];
+			[section addFormRow:row];
+			[form addFormSection:section];
 		}
 	}
 	
@@ -312,16 +328,7 @@
 		if (![host isDefault])
 			[host setHostname:[[form formValues] objectForKey:HOST_SETTINGS_KEY_HOST]];
 		
-		NSArray *keys = @[
-			HOST_SETTINGS_KEY_ALLOW_MIXED_MODE,
-			HOST_SETTINGS_KEY_BLOCK_LOCAL_NETS,
-			HOST_SETTINGS_KEY_CSP,
-			HOST_SETTINGS_KEY_TLS,
-			HOST_SETTINGS_KEY_WHITELIST_COOKIES,
-			HOST_SETTINGS_KEY_USER_AGENT,
-		];
-		
-		for (NSString *key in keys) {
+		for (NSString *key in [[HostSettings defaults] allKeys]) {
 			XLFormOptionsObject *opt = [[form formValues] objectForKey:key];
 			if (opt)
 				[host setSetting:key toValue:(NSString *)[opt valueData]];
@@ -329,6 +336,10 @@
 		
 		[host save];
 		[HostSettings persist];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[[NSNotificationCenter defaultCenter] postNotificationName:HOST_SETTINGS_CHANGED object:nil];
+		});
 	}];
 
 	[[self navigationController] pushViewController:formController animated:YES];

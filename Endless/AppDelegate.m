@@ -26,6 +26,7 @@
 #ifdef USE_DUMMY_URLINTERCEPTOR
 	[NSURLProtocol registerClass:[DummyURLInterceptor class]];
 #else
+	[URLInterceptor setup];
 	[NSURLProtocol registerClass:[URLInterceptor class]];
 #endif
 

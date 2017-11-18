@@ -76,6 +76,8 @@ Commercial redistribution license exclusions are available; please
     the session (until the last tab accessing that data closes) but allows
     persistent storage from configured hosts
 
+  - Blocks WebRTC by default
+
 - Auto-destroys non-whitelisted cookies and local storage (even within the same
   tab) that has not been accessed by any other tab within a configurable amount
   of time (defaults to 30 minutes) to improve privacy while browsing within a
