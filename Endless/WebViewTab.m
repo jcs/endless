@@ -142,15 +142,25 @@
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"WebProgressEstimateChangedNotification" object:[_webView valueForKeyPath:@"documentView.webView"]];
-	[_webView setDelegate:nil];
-	[_webView stopLoading];
 	
-	for (id gr in [_webView gestureRecognizers])
-		[_webView removeGestureRecognizer:gr];
+	void (^block)(void) = ^{
+		[_webView setDelegate:nil];
+		[_webView stopLoading];
+		
+		for (id gr in [_webView gestureRecognizers])
+			[_webView removeGestureRecognizer:gr];
+		
+		_webView = nil;
+		
+		[[self viewHolder] removeFromSuperview];
+	};
 	
-	_webView = nil;
-	
-	[[self viewHolder] removeFromSuperview];
+	if ([NSThread isMainThread])
+		block();
+	else
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			block();
+		});
 }
 
 /* for long press gesture recognizer to work properly */
