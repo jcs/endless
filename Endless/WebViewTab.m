@@ -233,8 +233,13 @@
 	
 	if (force)
 		[self setForcingRefresh:YES];
- 
-	[self.webView loadRequest:req];
+	
+	if ([NSThread isMainThread])
+		[self.webView loadRequest:req];
+	else
+		dispatch_sync(dispatch_get_main_queue(), ^{
+			[self.webView loadRequest:req];
+		});
 }
 
 - (void)searchFor:(NSString *)query
