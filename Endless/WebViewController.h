@@ -40,6 +40,7 @@ typedef NS_ENUM(NSInteger, WebViewTabAnimation) {
 
 - (WebViewTab *)addNewTabForURL:(NSURL *)url;
 - (WebViewTab *)addNewTabForURL:(NSURL *)url forRestoration:(BOOL)restoration withAnimation:(WebViewTabAnimation)animation withCompletionBlock:(void(^)(BOOL finished))block;
+- (void)addNewTabFromToolbar:(id)_id;
 - (void)switchToTab:(NSNumber *)tabNumber;
 - (void)removeTab:(NSNumber *)tabNumber andFocusTab:(NSNumber *)toFocus;
 - (void)removeTab:(NSNumber *)tabNumber;

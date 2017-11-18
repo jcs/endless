@@ -62,6 +62,10 @@
 {
 	[self.window makeKeyAndVisible];
 
+	if (launchOptions != nil && [launchOptions objectForKey:UIApplicationLaunchOptionsShortcutItemKey]) {
+		[self handleShortcut:[launchOptions objectForKey:UIApplicationLaunchOptionsShortcutItemKey]];
+	}
+	
 	return YES;
 }
 
@@ -117,6 +121,12 @@
 	[[self webViewController] addNewTabForURL:url];
 	
 	return YES;
+}
+
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler
+{
+	[self handleShortcut:shortcutItem];
+	completionHandler(YES);
 }
 
 - (BOOL)application:(UIApplication *)application shouldAllowExtensionPointIdentifier:(NSString *)extensionPointIdentifier {
@@ -341,6 +351,19 @@
 	}
 	
 	return NO;
+}
+
+- (void)handleShortcut:(UIApplicationShortcutItem *)shortcutItem
+{
+	if ([[shortcutItem type] containsString:@"OpenNewTab"]) {
+		[[self webViewController] dismissViewControllerAnimated:YES completion:nil];
+		[[self webViewController] addNewTabFromToolbar:nil];
+	} else if ([[shortcutItem type] containsString:@"ClearData"]) {
+		[[self webViewController] removeAllTabs];
+		[[self cookieJar] clearAllNonWhitelistedData];
+	} else {
+		NSLog(@"[AppDelegate] need to handle action %@", [shortcutItem type]);
+	}
 }
 
 @end
