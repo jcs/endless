@@ -119,7 +119,7 @@
 
 	VForceTouchGestureRecognizer *forceTouch = [[VForceTouchGestureRecognizer alloc] initWithTarget:self action:@selector(pressedMenu:)];
 	[forceTouch setDelegate:self];
-	[forceTouch setPercentMinimalRequest:0.5];
+	[forceTouch setPercentMinimalRequest:0.4];
 	inForceTouch = NO;
 	[self.webView addGestureRecognizer:forceTouch];
 	
