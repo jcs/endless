@@ -247,17 +247,21 @@
 
 - (void)loadRequest:(NSURLRequest *)req withForce:(BOOL)force
 {
-	[self.webView stopLoading];
-	[self prepareForNewURL:[req URL]];
+	void (^block)(void) = ^{
+		[self.webView stopLoading];
+		[self prepareForNewURL:[req URL]];
 	
-	if (force)
-		[self setForcingRefresh:YES];
+		if (force)
+			[self setForcingRefresh:YES];
+	
+		[self.webView loadRequest:req];
+	};
 	
 	if ([NSThread isMainThread])
-		[self.webView loadRequest:req];
+		block();
 	else
 		dispatch_sync(dispatch_get_main_queue(), ^{
-			[self.webView loadRequest:req];
+			block();
 		});
 }
 
