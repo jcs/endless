@@ -485,6 +485,12 @@
 	if (docTitle == nil || [docTitle isEqualToString:@""])
 		docTitle = finalURL;
 	
+	/* if we're viewing just an image, scale it down to fit the screen width and color its background */
+	NSString *ctype = [__webView stringByEvaluatingJavaScriptFromString:@"document.contentType"];
+	if (ctype != nil && [ctype hasPrefix:@"image/"]) {
+		[__webView stringByEvaluatingJavaScriptFromString:@"(function(){ document.body.style.backgroundColor = '#202020'; var i = document.getElementsByTagName('img')[0]; if (i && i.clientWidth > window.innerWidth) { var m = document.createElement('meta'); m.name='viewport'; m.content='width=device-width, initial-scale=1, maximum-scale=5'; document.getElementsByTagName('head')[0].appendChild(m); i.style.width = '100%'; } })();"];
+	}
+	
 	[self.title setText:docTitle];
 	self.url = [NSURL URLWithString:finalURL];
 }
