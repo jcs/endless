@@ -564,8 +564,12 @@
 		else if (webViewTabs.count > 1) {
 			[self showTabsWithCompletionBlock:swapToTab];
 		}
-		else if (block != nil) {
-			block(YES);
+		else {
+			if (url != nil && !restoration)
+				[wvt loadURL:url];
+
+			if (block != nil)
+				block(YES);
 		}
 	}
 
