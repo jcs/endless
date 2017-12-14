@@ -123,7 +123,7 @@
 	
 	lockIcon = [UIButton buttonWithType:UIButtonTypeCustom];
 	[lockIcon setFrame:CGRectMake(0, 0, 24, 16)];
-	[lockIcon setImage:[UIImage imageNamed:@"lock"] forState:UIControlStateNormal];
+	[lockIcon setImage:[[UIImage imageNamed:@"lock"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
 	[[lockIcon imageView] setContentMode:UIViewContentModeScaleAspectFit];
 	[lockIcon addTarget:self action:@selector(showSSLCertificate) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -738,23 +738,13 @@
 	}
 	else {
 		[urlField setTextAlignment:NSTextAlignmentCenter];
-		BOOL isEV = NO;
 		if (self.curWebViewTab && self.curWebViewTab.secureMode >= WebViewTabSecureModeSecure) {
 			[urlField setLeftView:lockIcon];
 			
-			if (self.curWebViewTab.secureMode == WebViewTabSecureModeSecureEV) {
-				/* wait until the page is done loading */
-				if ([progressBar progress] >= 1.0) {
-					[urlField setTextColor:[UIColor colorWithRed:0 green:(183.0/255.0) blue:(82.0/255.0) alpha:1.0]];
-			
-					if ([self.curWebViewTab.SSLCertificate evOrgName] == nil)
-						[urlField setText:NSLocalizedString(@"Unknown Organization", nil)];
-					else
-						[urlField setText:self.curWebViewTab.SSLCertificate.evOrgName];
-					
-					isEV = YES;
-				}
-			}
+			if (self.curWebViewTab.secureMode == WebViewTabSecureModeSecureEV)
+				[lockIcon setTintColor:[UIColor colorWithRed:0 green:(183.0/255.0) blue:(82.0/255.0) alpha:1.0]];
+			else
+				[lockIcon setTintColor:[UIColor blackColor]];
 		}
 		else if (self.curWebViewTab && self.curWebViewTab.secureMode == WebViewTabSecureModeMixed) {
 			[urlField setLeftView:brokenLockIcon];
@@ -763,24 +753,22 @@
 			[urlField setLeftView:nil];
 		}
 		
-		if (!isEV) {
-			NSString *host;
-			if (self.curWebViewTab.url == nil)
-				host = @"";
-			else {
-				host = [self.curWebViewTab.url host];
-				if (host == nil)
-					host = [self.curWebViewTab.url absoluteString];
-			}
-			
-			NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^www\\d*\\." options:NSRegularExpressionCaseInsensitive error:nil];
-			NSString *hostNoWWW = [regex stringByReplacingMatchesInString:host options:0 range:NSMakeRange(0, [host length]) withTemplate:@""];
-			
-			[urlField setText:hostNoWWW];
-			
-			if ([urlField.text isEqualToString:@""]) {
-				[urlField setTextAlignment:NSTextAlignmentLeft];
-			}
+		NSString *host;
+		if (self.curWebViewTab.url == nil)
+			host = @"";
+		else {
+			host = [self.curWebViewTab.url host];
+			if (host == nil)
+				host = [self.curWebViewTab.url absoluteString];
+		}
+		
+		NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^www\\d*\\." options:NSRegularExpressionCaseInsensitive error:nil];
+		NSString *hostNoWWW = [regex stringByReplacingMatchesInString:host options:0 range:NSMakeRange(0, [host length]) withTemplate:@""];
+		
+		[urlField setText:hostNoWWW];
+		
+		if ([urlField.text isEqualToString:@""]) {
+			[urlField setTextAlignment:NSTextAlignmentLeft];
 		}
 	}
 	
