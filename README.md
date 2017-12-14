@@ -98,7 +98,7 @@ Commercial redistribution license exclusions are available; please
   for enhancing privacy and not to be an AdBlock-style comprehensive ad-blocking
   list)
 
-- Shows locked padlock for fully SSL-encrypted URLs, and organization name for
+- Shows locked padlock for fully SSL-encrypted URLs, and a green padlock for
   sites with EV SSL certs
 
 - Integrated SSL certificate viewer by tapping on padlock icon, highlighting
