@@ -354,17 +354,17 @@
 	
 	/* keep tabScroller the size of the root frame minus the toolbar */
 	if (self.toolbarOnBottom) {
-		toolbar.frame = tabToolbar.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - keyboardHeight - self.view.safeAreaInsets.top - (keyboardHeight ? 0 : self.view.safeAreaInsets.bottom), self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, TOOLBAR_HEIGHT + keyboardHeight);
+		toolbar.frame = tabToolbar.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - keyboardHeight - (keyboardHeight ? 0 : self.view.safeAreaInsets.bottom), self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, TOOLBAR_HEIGHT + keyboardHeight);
 
 		progressBar.frame = CGRectMake(0, 0, toolbar.bounds.size.width, 2);
 		tabToolbarHairline.frame = CGRectMake(0, 0, toolbar.bounds.size.width, 1);
 
-		tabScroller.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.safeAreaInsets.top, self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, self.view.bounds.size.height - TOOLBAR_HEIGHT - self.view.safeAreaInsets.top - self.view.safeAreaInsets.bottom);
+		tabScroller.frame = CGRectMake(self.view.safeAreaInsets.left, 0, self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, self.view.bounds.size.height - TOOLBAR_HEIGHT - self.view.safeAreaInsets.bottom);
 
-		tabChooser.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - 20 - self.view.safeAreaInsets.top - self.view.safeAreaInsets.bottom, self.view.frame.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, 20);
+		tabChooser.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - 20 - self.view.safeAreaInsets.bottom, self.view.frame.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, 20);
 	}
 	else {
-		toolbar.frame = tabToolbar.frame = CGRectMake(self.view.safeAreaInsets.top, self.view.safeAreaInsets.left, self.view.bounds.size.width - self.view.safeAreaInsets.left + self.view.safeAreaInsets.right, TOOLBAR_HEIGHT);
+		toolbar.frame = tabToolbar.frame = CGRectMake(0, self.view.safeAreaInsets.left, self.view.bounds.size.width - self.view.safeAreaInsets.left + self.view.safeAreaInsets.right, TOOLBAR_HEIGHT);
 		progressBar.frame = CGRectMake(0, TOOLBAR_HEIGHT - 2, toolbar.frame.size.width, 2);
 		tabToolbarHairline.frame = CGRectMake(0, TOOLBAR_HEIGHT - 0.5, toolbar.frame.size.width, 0.5);
 
