@@ -116,8 +116,25 @@
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
 #ifdef TRACE
-	NSLog(@"[AppDelegate] request to open url \"%@\"", url);
+	NSLog(@"[AppDelegate] request to open url at launch: %@", url);
 #endif
+	if ([[[url scheme] lowercaseString] isEqualToString:@"endlesshttp"])
+		url = [NSURL URLWithString:[[url absoluteString] stringByReplacingCharactersInRange:NSMakeRange(0, [@"endlesshttp" length]) withString:@"http"]];
+	else if ([[[url scheme] lowercaseString] isEqualToString:@"endlesshttps"])
+		url = [NSURL URLWithString:[[url absoluteString] stringByReplacingCharactersInRange:NSMakeRange(0, [@"endlesshttps" length]) withString:@"https"]];
+
+	/* delay until we're done drawing the UI */
+	self.urlToOpenAtLaunch = url;
+	
+	return YES;
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+#ifdef TRACE
+	NSLog(@"[AppDelegate] request to open url: %@", url);
+#endif
+
 	if ([[[url scheme] lowercaseString] isEqualToString:@"endlesshttp"])
 		url = [NSURL URLWithString:[[url absoluteString] stringByReplacingCharactersInRange:NSMakeRange(0, [@"endlesshttp" length]) withString:@"http"]];
 	else if ([[[url scheme] lowercaseString] isEqualToString:@"endlesshttps"])

@@ -33,6 +33,10 @@
 		019516CC1B7D858C0078586A /* CKHTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 019516CB1B7D858C0078586A /* CKHTTPConnection.m */; };
 		019516CF1B7D8A0C0078586A /* NSData+CocoaDevUsersAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 019516CE1B7D8A0C0078586A /* NSData+CocoaDevUsersAdditions.m */; };
 		019516D11B7D8B400078586A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 019516D01B7D8B400078586A /* libz.dylib */; };
+		01AFB5A4201B934D002529A9 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01AFB5A3201B934D002529A9 /* ShareViewController.m */; };
+		01AFB5A7201B934D002529A9 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01AFB5A5201B934D002529A9 /* MainInterface.storyboard */; };
+		01AFB5AB201B934D002529A9 /* Open in Endless.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 01AFB5A0201B934D002529A9 /* Open in Endless.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		01AFB5B1201B96B8002529A9 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01AFB5B0201B96B7002529A9 /* MobileCoreServices.framework */; };
 		01AFEB371B4DBA8D00A02482 /* BookmarkController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01AFEB361B4DBA8D00A02482 /* BookmarkController.m */; };
 		01AFEB491B4ED48000A02482 /* Bookmark.m in Sources */ = {isa = PBXBuildFile; fileRef = 01AFEB481B4ED48000A02482 /* Bookmark.m */; };
 		01AFEB4F1B4F2A5F00A02482 /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 01AFEB4D1B4F2A5F00A02482 /* OnePasswordExtension.m */; };
@@ -87,7 +91,28 @@
 			remoteGlobalIDString = 01801E911A32CA2A002B4718;
 			remoteInfo = Endless;
 		};
+		01AFB5A9201B934D002529A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01801E8A1A32CA2A002B4718 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 01AFB59F201B934D002529A9;
+			remoteInfo = "Open in Endless";
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		01AFB5AF201B934D002529A9 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				01AFB5AB201B934D002529A9 /* Open in Endless.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		010EEA641A43A536001E8B65 /* CookieController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CookieController.h; sourceTree = "<group>"; };
@@ -137,6 +162,12 @@
 		019516CD1B7D8A0C0078586A /* NSData+CocoaDevUsersAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+CocoaDevUsersAdditions.h"; sourceTree = "<group>"; };
 		019516CE1B7D8A0C0078586A /* NSData+CocoaDevUsersAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+CocoaDevUsersAdditions.m"; sourceTree = "<group>"; };
 		019516D01B7D8B400078586A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		01AFB5A0201B934D002529A9 /* Open in Endless.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Open in Endless.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		01AFB5A2201B934D002529A9 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
+		01AFB5A3201B934D002529A9 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
+		01AFB5A6201B934D002529A9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		01AFB5A8201B934D002529A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		01AFB5B0201B96B7002529A9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		01AFEB351B4DBA8D00A02482 /* BookmarkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarkController.h; sourceTree = "<group>"; };
 		01AFEB361B4DBA8D00A02482 /* BookmarkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarkController.m; sourceTree = "<group>"; };
 		01AFEB471B4ED48000A02482 /* Bookmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bookmark.h; sourceTree = "<group>"; };
@@ -227,6 +258,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		01AFB59D201B934D002529A9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01AFB5B1201B96B8002529A9 /* MobileCoreServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -239,6 +278,7 @@
 				01801E951A32CA2A002B4718 /* Supporting Files */,
 				01B834961E145D3E0050EAB5 /* App-Store-only Files */,
 				018333D81A35727C00670CD1 /* Endless Tests */,
+				01AFB5A1201B934D002529A9 /* Open in Endless */,
 				01801E931A32CA2A002B4718 /* Products */,
 				6CC21620E2AE7B4037C6401B /* Frameworks */,
 				BDB4B310DC7AA8852D5D0A10 /* Pods */,
@@ -250,6 +290,7 @@
 			children = (
 				01801E921A32CA2A002B4718 /* Endless.app */,
 				018333D71A35727C00670CD1 /* Endless Tests.xctest */,
+				01AFB5A0201B934D002529A9 /* Open in Endless.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -377,6 +418,17 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		01AFB5A1201B934D002529A9 /* Open in Endless */ = {
+			isa = PBXGroup;
+			children = (
+				01AFB5A2201B934D002529A9 /* ShareViewController.h */,
+				01AFB5A3201B934D002529A9 /* ShareViewController.m */,
+				01AFB5A5201B934D002529A9 /* MainInterface.storyboard */,
+				01AFB5A8201B934D002529A9 /* Info.plist */,
+			);
+			path = "Open in Endless";
+			sourceTree = "<group>";
+		};
 		01AFEB4A1B4F2A5F00A02482 /* External */ = {
 			isa = PBXGroup;
 			children = (
@@ -415,6 +467,7 @@
 		6CC21620E2AE7B4037C6401B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				01AFB5B0201B96B7002529A9 /* MobileCoreServices.framework */,
 				016890E3201B808900CDD024 /* AVFoundation.framework */,
 				01B834941E12F4E70050EAB5 /* StoreKit.framework */,
 				019516D01B7D8B400078586A /* libz.dylib */,
@@ -450,10 +503,12 @@
 				01801E901A32CA2A002B4718 /* Resources */,
 				F52C9B85FC42EA46D19EBE17 /* [CP] Embed Pods Frameworks */,
 				82F555D0CE165063CE93824B /* [CP] Copy Pods Resources */,
+				01AFB5AF201B934D002529A9 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				01AFB5AA201B934D002529A9 /* PBXTargetDependency */,
 			);
 			name = Endless;
 			productName = Endless;
@@ -480,6 +535,23 @@
 			productName = "Endless Tests";
 			productReference = 018333D71A35727C00670CD1 /* Endless Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		01AFB59F201B934D002529A9 /* Open in Endless */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 01AFB5AE201B934D002529A9 /* Build configuration list for PBXNativeTarget "Open in Endless" */;
+			buildPhases = (
+				01AFB59C201B934D002529A9 /* Sources */,
+				01AFB59D201B934D002529A9 /* Frameworks */,
+				01AFB59E201B934D002529A9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Open in Endless";
+			productName = "Open in Endless";
+			productReference = 01AFB5A0201B934D002529A9 /* Open in Endless.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -509,6 +581,11 @@
 						CreatedOnToolsVersion = 6.1.1;
 						TestTargetID = 01801E911A32CA2A002B4718;
 					};
+					01AFB59F201B934D002529A9 = {
+						CreatedOnToolsVersion = 9.2;
+						DevelopmentTeam = J9PM5B7FE7;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 01801E8D1A32CA2A002B4718 /* Build configuration list for PBXProject "Endless" */;
@@ -527,6 +604,7 @@
 			targets = (
 				01801E911A32CA2A002B4718 /* Endless */,
 				018333D61A35727C00670CD1 /* Endless Tests */,
+				01AFB59F201B934D002529A9 /* Open in Endless */,
 			);
 		};
 /* End PBXProject section */
@@ -569,6 +647,14 @@
 				01F2AE451B827D3E00D5651A /* lobste.rs.crt in Resources */,
 				01F879441A41140D00A63654 /* https-everywhere_mock_rules.plist in Resources */,
 				01F2AE4A1B82835A00D5651A /* expired.superblock.net.crt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01AFB59E201B934D002529A9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01AFB5A7201B934D002529A9 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -731,6 +817,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		01AFB59C201B934D002529A9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01AFB5A4201B934D002529A9 /* ShareViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -739,9 +833,22 @@
 			target = 01801E911A32CA2A002B4718 /* Endless */;
 			targetProxy = 018333DD1A35727C00670CD1 /* PBXContainerItemProxy */;
 		};
+		01AFB5AA201B934D002529A9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 01AFB59F201B934D002529A9 /* Open in Endless */;
+			targetProxy = 01AFB5A9201B934D002529A9 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		01AFB5A5201B934D002529A9 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				01AFB5A6201B934D002529A9 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
 		A024D5AA1ECEF10F00B28CC5 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -957,6 +1064,53 @@
 			};
 			name = Release;
 		};
+		01AFB5AC201B934D002529A9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = J9PM5B7FE7;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = "Open in Endless/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.jcs.endless.Open-in-Endless";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		01AFB5AD201B934D002529A9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = J9PM5B7FE7;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = "Open in Endless/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.jcs.endless.Open-in-Endless";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -983,6 +1137,15 @@
 			buildConfigurations = (
 				018333E01A35727C00670CD1 /* Debug */,
 				018333E11A35727C00670CD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		01AFB5AE201B934D002529A9 /* Build configuration list for PBXNativeTarget "Open in Endless" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01AFB5AC201B934D002529A9 /* Debug */,
+				01AFB5AD201B934D002529A9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

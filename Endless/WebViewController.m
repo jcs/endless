@@ -279,6 +279,13 @@
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	[userDefaults removeObjectForKey:STATE_RESTORE_TRY_KEY];
 	[userDefaults synchronize];
+	
+	if ([appDelegate urlToOpenAtLaunch]) {
+		NSURL *u = [appDelegate urlToOpenAtLaunch];
+		[appDelegate setUrlToOpenAtLaunch:nil];
+		
+		[self addNewTabForURL:u];
+	}
 }
 
 /* called when we've become visible (possibly again, from app delegate applicationDidBecomeActive) */
