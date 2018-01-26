@@ -15,6 +15,7 @@
 		014E68A51B9BED3300D98A0A /* HostSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 014E68A41B9BED3300D98A0A /* HostSettingsController.m */; };
 		014E68A81B9BEDDC00D98A0A /* HostSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 014E68A71B9BEDDC00D98A0A /* HostSettings.m */; };
 		015748051E208C5000DB2044 /* UIResponder+FirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 015748041E208C5000DB2044 /* UIResponder+FirstResponder.m */; };
+		016890E4201B808900CDD024 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 016890E3201B808900CDD024 /* AVFoundation.framework */; };
 		016B2FCB1A53466D002D2730 /* hsts_preload.plist in Resources */ = {isa = PBXBuildFile; fileRef = 016B2FCA1A53466D002D2730 /* hsts_preload.plist */; };
 		016B2FCD1A5648AE002D2730 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 016B2FCC1A5648AE002D2730 /* WebKit.framework */; };
 		01801E981A32CA2A002B4718 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 01801E971A32CA2A002B4718 /* main.m */; };
@@ -104,6 +105,7 @@
 		014E68A71B9BEDDC00D98A0A /* HostSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HostSettings.m; sourceTree = "<group>"; };
 		015748031E208C5000DB2044 /* UIResponder+FirstResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIResponder+FirstResponder.h"; sourceTree = "<group>"; };
 		015748041E208C5000DB2044 /* UIResponder+FirstResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIResponder+FirstResponder.m"; sourceTree = "<group>"; };
+		016890E3201B808900CDD024 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		016B2FCA1A53466D002D2730 /* hsts_preload.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = hsts_preload.plist; path = Endless/Resources/hsts_preload.plist; sourceTree = "<group>"; };
 		016B2FCC1A5648AE002D2730 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		01801E921A32CA2A002B4718 /* Endless.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Endless.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -209,6 +211,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				016890E4201B808900CDD024 /* AVFoundation.framework in Frameworks */,
 				019516D11B7D8B400078586A /* libz.dylib in Frameworks */,
 				016B2FCD1A5648AE002D2730 /* WebKit.framework in Frameworks */,
 				01B834951E12F4E70050EAB5 /* StoreKit.framework in Frameworks */,
@@ -412,6 +415,7 @@
 		6CC21620E2AE7B4037C6401B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				016890E3201B808900CDD024 /* AVFoundation.framework */,
 				01B834941E12F4E70050EAB5 /* StoreKit.framework */,
 				019516D01B7D8B400078586A /* libz.dylib */,
 				016B2FCC1A5648AE002D2730 /* WebKit.framework */,

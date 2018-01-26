@@ -1,9 +1,11 @@
 /*
  * Endless
- * Copyright (c) 2014-2017 joshua stein <jcs@jcs.org>
+ * Copyright (c) 2014-2018 joshua stein <jcs@jcs.org>
  *
  * See LICENSE file for redistribution terms.
  */
+
+#import <AVFoundation/AVFoundation.h>
 
 #import "AppDelegate.h"
 #import "Bookmark.h"
@@ -54,6 +56,10 @@
 	self.window.backgroundColor = [UIColor groupTableViewBackgroundColor];
 	self.window.rootViewController = [[WebViewController alloc] init];
 	self.window.rootViewController.restorationIdentifier = @"WebViewController";
+	
+	/* setting AVAudioSessionCategoryAmbient will prevent audio from UIWebView from pausing already-playing audio from other apps */
+	[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+	[[AVAudioSession sharedInstance] setActive:NO error:nil];
 	
 	return YES;
 }
