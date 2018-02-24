@@ -551,7 +551,7 @@ static NSString *_javascriptToInject;
 
 			/* if we're being redirected from secure back to insecure, we might be stuck in a loop from an HTTPSEverywhere rule */
 			if ([[[[self actualRequest] URL] scheme] isEqualToString:@"https"] && [[[newRequest URL] scheme] isEqualToString:@"http"])
-				[HTTPSEverywhere noteInsecureRedirectionForURL:[[self actualRequest] URL]];
+				[HTTPSEverywhere noteInsecureRedirectionForURL:[[self actualRequest] URL] toURL:[newRequest URL]];
 			
 			/* process it all over again */
 			[NSURLProtocol removePropertyForKey:REWRITTEN_KEY inRequest:newRequest];
