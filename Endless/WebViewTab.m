@@ -19,6 +19,7 @@
 @implementation WebViewTab {
 	AppDelegate *appDelegate;
 	BOOL inForceTouch;
+	BOOL skipHistory;
 }
 
 + (WebViewTab *)openedWebViewTabByRandID:(NSString *)randID
@@ -138,6 +139,8 @@
 			}
 		}
 	}
+	
+	self.history = [[NSMutableArray alloc] initWithCapacity:HISTORY_SIZE];
 	
 	/* this doubles as a way to force the webview to initialize itself, otherwise the UA doesn't seem to set right before refreshing a previous restoration state */
 	NSString *ua = [_webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
@@ -494,6 +497,16 @@
 	
 	[self.title setText:docTitle];
 	self.url = [NSURL URLWithString:finalURL];
+	
+	if (!skipHistory) {
+		while (self.history.count > HISTORY_SIZE)
+			[self.history removeObjectAtIndex:0];
+		
+		if (self.history.count == 0 || ![[[self.history lastObject] objectForKey:@"url"] isEqualToString:finalURL])
+			[self.history addObject:@{ @"url" : finalURL, @"title" : docTitle }];
+	}
+	
+	skipHistory = NO;
 }
 
 - (void)webView:(UIWebView *)__webView didFailLoadWithError:(NSError *)error
@@ -760,6 +773,7 @@
 - (void)goBack
 {
 	if ([self.webView canGoBack]) {
+		skipHistory = YES;
 		[[self webView] goBack];
 	}
 	else if (self.openedByTabHash) {
@@ -776,18 +790,22 @@
 
 - (void)goForward
 {
-	if ([[self webView] canGoForward])
+	if ([[self webView] canGoForward]) {
+		skipHistory = YES;
 		[[self webView] goForward];
+	}
 }
 
 - (void)refresh
 {
 	[self setNeedsRefresh:FALSE];
+	skipHistory = YES;
 	[[self webView] reload];
 }
 
 - (void)forceRefresh
 {
+	skipHistory = YES;
 	[self loadURL:[self url] withForce:YES];
 }
 

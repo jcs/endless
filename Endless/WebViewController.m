@@ -1,12 +1,13 @@
 /*
  * Endless
- * Copyright (c) 2014-2017 joshua stein <jcs@jcs.org>
+ * Copyright (c) 2014-2018 joshua stein <jcs@jcs.org>
  *
  * See LICENSE file for redistribution terms.
  */
 
 #import "AppDelegate.h"
 #import "BookmarkController.h"
+#import "HistoryController.h"
 #import "SSLCertificateViewController.h"
 #import "URLInterceptor.h"
 #import "WebViewController.h"
@@ -40,6 +41,7 @@
 	int keyboardHeight;
 	
 	UIButton *backButton;
+	UILongPressGestureRecognizer *historyRecognizer;
 	UIButton *forwardButton;
 	UIButton *tabsButton;
 	UIButton *settingsButton;
@@ -100,6 +102,10 @@
 	[backButton setImage:backImage forState:UIControlStateNormal];
 	[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
 	[toolbar addSubview:backButton];
+
+	historyRecognizer = [[UILongPressGestureRecognizer alloc] init];
+	[historyRecognizer addTarget:self action:@selector(showHistory:)];
+	[backButton addGestureRecognizer:historyRecognizer];
 	
 	forwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	UIImage *forwardImage = [[UIImage imageNamed:@"forward"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -780,20 +786,16 @@
 	}
 	
 	backButton.enabled = (self.curWebViewTab && self.curWebViewTab.canGoBack);
-	if (backButton.enabled) {
+	if (backButton.enabled)
 		[backButton setTintColor:(self.darkInterface ? [UIColor lightTextColor] : [progressBar tintColor])];
-	}
-	else {
+	else
 		[backButton setTintColor:[UIColor grayColor]];
-	}
 
 	forwardButton.hidden = !(self.curWebViewTab && self.curWebViewTab.canGoForward);
-	if (forwardButton.enabled) {
+	if (forwardButton.enabled)
 		[forwardButton setTintColor:(self.darkInterface ? [UIColor lightTextColor] : [progressBar tintColor])];
-	}
-	else {
+	else
 		[forwardButton setTintColor:[UIColor grayColor]];
-	}
 
 	[urlField setFrame:[self frameForUrlField]];
 }
@@ -954,6 +956,18 @@
 - (void)goForward:(id)_id
 {
 	[self.curWebViewTab goForward];
+}
+
+- (void)showHistory:(id)_id
+{
+	[historyRecognizer setEnabled:NO];
+	
+	if ([[[self curWebViewTab] history] count] > 1) {
+		UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HistoryController alloc] initForTab:[self curWebViewTab]]];
+		[self presentViewController:navController animated:YES completion:nil];
+	}
+	
+	[historyRecognizer setEnabled:YES];
 }
 
 - (void)refresh
