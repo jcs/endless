@@ -41,9 +41,13 @@ NSString * const LABEL = @"L";
 	
 	[buttons addObject:@{ FUNC : @"menuRefresh", LABEL : NSLocalizedString(@"Refresh", nil) }];
 	
-	/* no point in showing this if the user doesn't have 1p installed */
-	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"onepassword://"]])
+	/* no point in showing this if the user doesn't have a password manager installed */
+	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"bitwarden://"]])
+		[buttons addObject:@{ FUNC : @"menuOnePassword", LABEL : NSLocalizedString(@"Fill with Bitwarden", nil) }];
+	else if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"onepassword://"]])
 		[buttons addObject:@{ FUNC : @"menuOnePassword", LABEL : NSLocalizedString(@"Fill with 1Password", nil) }];
+	else if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"org-appextension-feature-password-management://"]])
+		[buttons addObject:@{ FUNC : @"menuOnePassword", LABEL : NSLocalizedString(@"Password Manager", nil) }];
 
 	[buttons addObject:@{ FUNC : @"menuAddOrManageBookmarks", LABEL : NSLocalizedString(@"Manage Bookmarks", nil) }];
 	[buttons addObject:@{ FUNC : @"menuShare", LABEL : NSLocalizedString(@"Share URL", nil) }];
