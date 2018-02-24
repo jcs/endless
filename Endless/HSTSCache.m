@@ -212,7 +212,8 @@ static NSDictionary *_preloadedHosts;
 
 - (void)setValue:(id)value forKey:(NSString *)key
 {
-	[[self dict] setValue:value forKey:key];
+	if (value != nil && key != nil)
+		[[self dict] setValue:value forKey:key];
 }
 
 - (void)removeObjectForKey:(id)aKey
