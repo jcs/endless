@@ -228,7 +228,19 @@ static NSString *_javascriptToInject;
 	}
 	
 	if (wvt == nil && [[self class] isURLTemporarilyAllowed:[request URL]])
-		wvt = [[[appDelegate webViewController] webViewTabs] firstObject];
+		wvt = [[appDelegate webViewController] curWebViewTab];
+
+	/*
+	 * Videos load without our modified User-Agent (which normally has a per-tab hash appended to it to be able to match
+	 * it to the proper tab) but it does have its own UA which starts with "AppleCoreMedia/".  Assume it came from the
+	 * current tab and hope for the best.
+	 */
+	if (wvt == nil && ([[[[request URL] scheme] lowercaseString] isEqualToString:@"http"] || [[[[request URL] scheme] lowercaseString] isEqualToString:@"https"]) && [[ua substringToIndex:15] isEqualToString:@"AppleCoreMedia/"]) {
+#ifdef TRACE
+		NSLog(@"[URLInterceptor] AppleCoreMedia request with no matching WebViewTab, binding to current tab: %@", [request URL]);
+#endif
+		wvt = [[appDelegate webViewController] curWebViewTab];
+	}
 	
 	if (wvt == nil) {
 		NSLog(@"[URLInterceptor] request for %@ with no matching WebViewTab! (main URL %@, UA hash %@)", [request URL], [request mainDocumentURL], wvthash);
