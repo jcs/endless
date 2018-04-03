@@ -35,6 +35,8 @@
 
 #define HOST_SETTINGS_KEY_USER_AGENT @"user_agent"
 
+#define HOST_SETTINGS_KEY_UNIVERSAL_LINK_PROTECTION @"universal_link_protection"
+
 @interface HostSettings : NSObject
 
 @property (strong) NSMutableDictionary *dict;

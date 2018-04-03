@@ -217,6 +217,22 @@
 			[section addFormRow:row];
 			[form addFormSection:section];
 		}
+		
+		/* universal link protection */
+		{
+			XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:HOST_SETTINGS_KEY_UNIVERSAL_LINK_PROTECTION rowType:XLFormRowDescriptorTypeSelectorActionSheet title:NSLocalizedString(@"Universal Link Protection", nil)];
+			[self setYesNoSelectorOptionsForSetting:HOST_SETTINGS_KEY_UNIVERSAL_LINK_PROTECTION host:host row:row withDefault:(![host isDefault])];
+			
+			section = [XLFormSectionDescriptor formSection];
+			[section setTitle:@""];
+			[section setFooterTitle:([host isDefault]
+						 ? NSLocalizedString(@"Handle tapping on links in a non-standard way to avoid possibly opening external applications", nil)
+						 : NSLocalizedString(@"Handle tapping on links on pages from this host in a non-standard way to avoid possibly opening external applications", nil))
+			];
+			[section addFormRow:row];
+			[form addFormSection:section];
+		}
+
 	}
 	
 	/* security section */

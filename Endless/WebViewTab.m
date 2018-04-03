@@ -345,22 +345,30 @@
 	else if (![[url scheme] isEqualToString:@"endlessipc"]) {
 		/* try to prevent universal links from triggering by refusing the initial request and starting a new one */
 		BOOL iframe = ![[[request URL] absoluteString] isEqualToString:[[request mainDocumentURL] absoluteString]];
-		if (iframe) {
+		
+		HostSettings *hs = [HostSettings settingsOrDefaultsForHost:[url host]];
+		if ([hs boolSettingOrDefault:HOST_SETTINGS_KEY_UNIVERSAL_LINK_PROTECTION]) {
+			if (iframe && navigationType != UIWebViewNavigationTypeLinkClicked) {
 #ifdef TRACE
-			NSLog(@"[Tab %@] not doing universal link workaround for iframe %@", [self tabIndex], url);
+				NSLog(@"[Tab %@] not doing universal link workaround for iframe %@", [self tabIndex], url);
 #endif
-		} else if (navigationType == UIWebViewNavigationTypeBackForward) {
+			} else if (navigationType == UIWebViewNavigationTypeBackForward) {
 #ifdef TRACE
-			NSLog(@"[Tab %@] not doing universal link workaround for back/forward navigation to %@", [self tabIndex], url);
+				NSLog(@"[Tab %@] not doing universal link workaround for back/forward navigation to %@", [self tabIndex], url);
 #endif
-		} else if ([[[url scheme] lowercaseString] hasPrefix:@"http"] && ![NSURLProtocol propertyForKey:UNIVERSAL_LINKS_WORKAROUND_KEY inRequest:request]) {
-			NSMutableURLRequest *tr = [request mutableCopy];
-			[NSURLProtocol setProperty:@YES forKey:UNIVERSAL_LINKS_WORKAROUND_KEY inRequest:tr];
+			} else if ([[[url scheme] lowercaseString] hasPrefix:@"http"] && ![NSURLProtocol propertyForKey:UNIVERSAL_LINKS_WORKAROUND_KEY inRequest:request]) {
+				NSMutableURLRequest *tr = [request mutableCopy];
+				[NSURLProtocol setProperty:@YES forKey:UNIVERSAL_LINKS_WORKAROUND_KEY inRequest:tr];
 #ifdef TRACE
-			NSLog(@"[Tab %@] doing universal link workaround for %@", [self tabIndex], url);
+				NSLog(@"[Tab %@] doing universal link workaround for %@", [self tabIndex], url);
 #endif
-			[self loadRequest:tr withForce:NO];
-			return NO;
+				[self loadRequest:tr withForce:NO];
+				return NO;
+			}
+		} else {
+#ifdef TRACE
+			NSLog(@"[Tab %@] not doing universal link workaround for %@ due to HostSettings", [self tabIndex], url);
+#endif
 		}
 		
 		if (!iframe)
