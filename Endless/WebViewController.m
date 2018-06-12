@@ -39,6 +39,7 @@
 	UIToolbar *tabToolbar;
 	UILabel *tabCount;
 	int keyboardHeight;
+	BOOL keyboardShowing;
 	
 	UIButton *backButton;
 	UILongPressGestureRecognizer *historyRecognizer;
@@ -326,15 +327,22 @@
 	CGRect keyboardStart = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
 	CGRect keyboardEnd = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
 	
+	/* iOS 11.4 started sending additional UIKeyboardWillShowNotification notifications when the user taps on the URL bar when the keyboard is already up, so keyboardHeight ends up being 0 (because there is no change in FrameBegin->FrameEnd) and disappears.  Keep track of whether the keyboard is showing and ignore these duplicate events until we get a UIKeyboardWillHideNotification event. */
+	if (keyboardStart.origin.y == keyboardEnd.origin.y && keyboardShowing)
+		return;
+	
 	/* on devices with a bluetooth keyboard attached, both values should be the same for a 0 height */
 	keyboardHeight = keyboardStart.origin.y - keyboardEnd.origin.y;
 
+	keyboardShowing = (keyboardHeight > 0);
+	
 	[self viewDidLayoutSubviews];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
 	keyboardHeight = 0;
+	keyboardShowing = NO;
 	[self viewDidLayoutSubviews];
 }
 
