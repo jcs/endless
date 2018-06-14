@@ -458,7 +458,7 @@ static NSString *_javascriptToInject;
 	
 	/* rewrite or inject Content-Security-Policy (and X-Webkit-CSP just in case) headers */
 	NSString *CSPheader = nil;
-	NSString *CSPmode = [self.originHostSettings setting:HOST_SETTINGS_KEY_CSP];
+	NSString *CSPmode = [self.originHostSettings settingOrDefault:HOST_SETTINGS_KEY_CSP];
 
 	if ([CSPmode isEqualToString:HOST_SETTINGS_CSP_STRICT])
 		CSPheader = @"connect-src 'none'; default-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; sandbox allow-forms allow-top-navigation; script-src 'none'; style-src 'unsafe-inline' *; report-uri;";
