@@ -8,6 +8,7 @@
 #import "AppDelegate.h"
 #import "BookmarkController.h"
 #import "HistoryController.h"
+#import "SearchResultsController.h"
 #import "SSLCertificateViewController.h"
 #import "URLInterceptor.h"
 #import "WebViewController.h"
@@ -58,6 +59,7 @@
 	WYPopoverController *popover;
 	
 	BookmarkController *bookmarks;
+	SearchResultsController *searchResults;
 }
 
 - (void)loadView
@@ -126,6 +128,7 @@
 	[urlField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	[urlField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[urlField setDelegate:self];
+	[urlField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
 	[toolbar addSubview:urlField];
 	
 	lockIcon = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -318,7 +321,7 @@
 - (void)viewIsNoLongerVisible
 {
 	if ([urlField isFirstResponder]) {
-		[urlField resignFirstResponder];
+		[self unfocusUrlField];
 	}
 }
 
@@ -511,6 +514,12 @@
 	[urlField becomeFirstResponder];
 }
 
+- (void)unfocusUrlField
+{
+	/* will unfocus and call textFieldDidEndEditing */
+	[urlField resignFirstResponder];
+}
+
 - (NSMutableArray *)webViewTabs
 {
 	return webViewTabs;
@@ -657,7 +666,7 @@
 		return;
 	
 	if ([urlField isFirstResponder]) {
-		[urlField resignFirstResponder];
+		[self unfocusUrlField];
 		return;
 	}
 	
@@ -854,7 +863,7 @@
 - (void)webViewTouched
 {
 	if ([urlField isFirstResponder]) {
-		[urlField resignFirstResponder];
+		[self unfocusUrlField];
 	}
 }
 
@@ -884,15 +893,36 @@
 	[self updateSearchBarDetails];
 }
 
+- (void)textFieldDidChange:(UITextField *)textField
+{
+	if (textField != urlField)
+		return;
+
+	/* if it looks like we're typing a url, stop searching */
+	if ([urlField text] == nil || [[urlField text] isEqualToString:@""] || [[urlField text] hasPrefix:@"http:"] || [[urlField text] hasPrefix:@"https:"] || [[urlField text] containsString:@"."]) {
+		[self hideSearchResults];
+		[self showBookmarksForEditing:NO];
+		return;
+	}
+	
+	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+	if (![userDefaults boolForKey:@"search_engine_live"])
+		return;
+	
+	[self hideBookmarks];
+	[self showSearchResultsForQuery:[urlField text]];
+}
+
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
-	if (textField != nil && textField != urlField)
+	if (textField != urlField)
 		return;
 
 #ifdef TRACE
 	NSLog(@"[WebViewController] ended editing with: %@", [textField text]);
 #endif
 	[self hideBookmarks];
+	[self hideSearchResults];
 
 	[UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
 		[urlField setTextAlignment:NSTextAlignmentCenter];
@@ -904,7 +934,8 @@
 	[self updateSearchBarDetails];
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
 	if (textField != urlField) {
 		return YES;
 	}
@@ -935,7 +966,7 @@
 			enteredURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", url]];
 	}
 	
-	[urlField resignFirstResponder]; /* will unfocus and call textFieldDidEndEditing */
+	[self unfocusUrlField];
 
 	if (enteredURL != nil)
 		[[self curWebViewTab] loadURL:enteredURL];
@@ -1070,7 +1101,7 @@
 		/* zoom out to show all tabs */
 		
 		/* make sure no text is selected */
-		[urlField resignFirstResponder];
+		[self unfocusUrlField];
 		
 		[UIView animateWithDuration:0.15 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			if (!self.toolbarOnBottom)
@@ -1139,7 +1170,7 @@
 {
 	if (!showingTabs) {
 		if ([urlField isFirstResponder]) {
-			[urlField resignFirstResponder];
+			[self unfocusUrlField];
 		}
 		
 		return;
@@ -1242,6 +1273,34 @@
 	[[bookmarks view] removeFromSuperview];
 	[bookmarks removeFromParentViewController];
 	bookmarks = nil;
+}
+
+- (void)showSearchResultsForQuery:(NSString *)query
+{
+	if (!searchResults) {
+		searchResults = [[SearchResultsController alloc] init];
+	
+		if (self.toolbarOnBottom)
+		/* we can't size according to keyboard height because we don't know it yet, so we'll just put it full height below the toolbar and we'll update it when the keyboard shows up */
+			searchResults.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+		else
+			searchResults.view.frame = CGRectMake(0, toolbar.frame.size.height + toolbar.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height);
+		
+		[self addChildViewController:searchResults];
+		[self.view insertSubview:[searchResults view] belowSubview:toolbar];
+	}
+	
+	[searchResults updateSearchResultsForQuery:query];
+}
+
+- (void)hideSearchResults
+{
+	if (!searchResults)
+		return;
+	
+	[[searchResults view] removeFromSuperview];
+	[searchResults removeFromParentViewController];
+	searchResults = nil;
 }
 
 @end

@@ -42,7 +42,8 @@ Commercial redistribution license exclusions are available; please
 - Long-press on back button to show history and quickly go back more than one
   page
 
-- Search from URL bar with DDG, Google, or Startpage
+- Search from URL bar with DDG, Google, or Startpage, including optional
+  auto-complete of search queries
 
 - Optional dark/night-time interface
 

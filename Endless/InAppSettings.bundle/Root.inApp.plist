@@ -66,6 +66,16 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Auto-complete search results</string>
+			<key>Key</key>
+			<string>search_engine_live</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Custom home page</string>
 			<key>Key</key>
 			<string>homepage</string>

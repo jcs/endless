@@ -29,6 +29,7 @@ typedef NS_ENUM(NSInteger, WebViewTabAnimation) {
 @property BOOL darkInterface;
 
 - (void)focusUrlField;
+- (void)unfocusUrlField;
 
 - (NSMutableArray *)webViewTabs;
 - (__strong WebViewTab *)curWebViewTab;
@@ -55,5 +56,6 @@ typedef NS_ENUM(NSInteger, WebViewTabAnimation) {
 - (void)prepareForNewURLFromString:(NSString *)url;
 - (void)showBookmarksForEditing:(BOOL)editing;
 - (void)hideBookmarks;
+- (void)hideSearchResults;
 
 @end

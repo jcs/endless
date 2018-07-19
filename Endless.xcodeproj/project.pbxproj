@@ -31,6 +31,7 @@
 		018333DC1A35727C00670CD1 /* HTTPSEverywhere_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 018333DB1A35727C00670CD1 /* HTTPSEverywhere_Tests.m */; };
 		018333E91A35746500670CD1 /* https-everywhere_rules.plist in Resources */ = {isa = PBXBuildFile; fileRef = 018333E71A35746500670CD1 /* https-everywhere_rules.plist */; };
 		018333EA1A35746500670CD1 /* https-everywhere_targets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 018333E81A35746500670CD1 /* https-everywhere_targets.plist */; };
+		01948FE02101314800575F64 /* SearchResultsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01948FDF2101314800575F64 /* SearchResultsController.m */; };
 		019499C820D2D8FC00A29269 /* HostSettings_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 019499C720D2D8FC00A29269 /* HostSettings_Tests.m */; };
 		019516CC1B7D858C0078586A /* CKHTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 019516CB1B7D858C0078586A /* CKHTTPConnection.m */; };
 		019516CF1B7D8A0C0078586A /* NSData+CocoaDevUsersAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 019516CE1B7D8A0C0078586A /* NSData+CocoaDevUsersAdditions.m */; };
@@ -161,6 +162,8 @@
 		018333E71A35746500670CD1 /* https-everywhere_rules.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "https-everywhere_rules.plist"; path = "Endless/Resources/https-everywhere_rules.plist"; sourceTree = "<group>"; };
 		018333E81A35746500670CD1 /* https-everywhere_targets.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "https-everywhere_targets.plist"; path = "Endless/Resources/https-everywhere_targets.plist"; sourceTree = "<group>"; };
 		018333EB1A357D8B00670CD1 /* libPods-OCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-OCMock.a"; path = "Pods/build/Debug-iphoneos/libPods-OCMock.a"; sourceTree = "<group>"; };
+		01948FDE2101314800575F64 /* SearchResultsController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchResultsController.h; sourceTree = "<group>"; };
+		01948FDF2101314800575F64 /* SearchResultsController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SearchResultsController.m; sourceTree = "<group>"; };
 		019499C720D2D8FC00A29269 /* HostSettings_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HostSettings_Tests.m; path = "Endless Tests/HostSettings_Tests.m"; sourceTree = SOURCE_ROOT; };
 		019516CA1B7D858C0078586A /* CKHTTPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKHTTPConnection.h; sourceTree = "<group>"; };
 		019516CB1B7D858C0078586A /* CKHTTPConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKHTTPConnection.m; sourceTree = "<group>"; };
@@ -329,6 +332,8 @@
 				0182AD9A1AACC55400F3B7ED /* HTTPSEverywhereRuleController.m */,
 				01EFA7FD1A63851400688398 /* LocalNetworkChecker.h */,
 				01EFA7FE1A63851400688398 /* LocalNetworkChecker.m */,
+				01948FDE2101314800575F64 /* SearchResultsController.h */,
+				01948FDF2101314800575F64 /* SearchResultsController.m */,
 				01F2AE371B7FEF5E00D5651A /* SSLCertificate.h */,
 				01F2AE381B7FEF5E00D5651A /* SSLCertificate.m */,
 				01F2AE3E1B82666900D5651A /* SSLCertificateViewController.h */,
@@ -801,6 +806,7 @@
 				01F7CB491A5253DD00F42B73 /* HSTSCache.m in Sources */,
 				01F7CB4E1A52FC4E00F42B73 /* NSString+IPAddress.m in Sources */,
 				014E68A81B9BEDDC00D98A0A /* HostSettings.m in Sources */,
+				01948FE02101314800575F64 /* SearchResultsController.m in Sources */,
 				0135F47F1A3E548F005A8F16 /* WebViewTab.m in Sources */,
 				01AFEB371B4DBA8D00A02482 /* BookmarkController.m in Sources */,
 				010EEA661A43A536001E8B65 /* CookieController.m in Sources */,
