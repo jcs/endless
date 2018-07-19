@@ -12,6 +12,7 @@
 #import "NSString+JavascriptEscape.h"
 #import "UIResponder+FirstResponder.h"
 
+#import "NSString+DTURLEncoding.h"
 #import "VForceTouchGestureRecognizer.h"
 
 @import WebKit;
@@ -281,7 +282,7 @@
 	NSDictionary *pp = [se objectForKey:@"post_params"];
 	NSString *urls;
 	if (pp == nil)
-		urls = [[NSString stringWithFormat:[se objectForKey:@"search_url"], query] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+		urls = [NSString stringWithFormat:[se objectForKey:@"search_url"], [query stringByURLEncoding]];
 	else
 		urls = [se objectForKey:@"search_url"];
 	
@@ -299,12 +300,12 @@
 			if (![params isEqualToString:@""])
 				[params appendString:@"&"];
 			
-			[params appendString:[key stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
+			[params appendString:[key stringByURLEncoding]];
 			[params appendString:@"="];
 			
 			NSString *val = [pp objectForKey:key];
 			if ([val isEqualToString:@"%@"])
-				val = [query stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+				val = [query stringByURLEncoding];
 			[params appendString:val];
 		}
 		
