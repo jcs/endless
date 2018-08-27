@@ -124,7 +124,7 @@ static NSString *_javascriptToInject;
 		return NO;
 	
 	NSString *scheme = [[[request URL] scheme] lowercaseString];
-	if ([scheme isEqualToString:@"data"] || [scheme isEqualToString:@"file"])
+	if ([scheme isEqualToString:@"data"] || [scheme isEqualToString:@"file"] || [scheme isEqualToString:@"mailto"])
 		/* can't do anything for these URLs */
 		return NO;
 	
