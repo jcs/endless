@@ -96,7 +96,7 @@ static const struct keyboard_map_entry {
 	{ NULL }
 };
 
-@interface WebViewTab : NSObject <UIWebViewDelegate, UIGestureRecognizerDelegate>
+@interface WebViewTab : NSObject <UIWebViewDelegate, UIGestureRecognizerDelegate, UIActivityItemSource>
 
 @property (strong, atomic) UIView *viewHolder;
 @property (strong, atomic) UIWebView *webView;

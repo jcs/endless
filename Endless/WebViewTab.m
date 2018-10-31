@@ -954,4 +954,20 @@
 	[[self webView] stringByEvaluatingJavaScriptFromString:js];
 }
 
+/* UIActivityItemSource for URL sharing */
+- (id)activityViewControllerPlaceholderItem:(UIActivityViewController *)activityViewController
+{
+	return [[self title] text];
+}
+
+- (id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(UIActivityType)activityType
+{
+	return [self url];
+}
+
+- (NSString *)activityViewController:(UIActivityViewController *)activityViewController subjectForActivityType:(UIActivityType)activityType
+{
+	return [[self title] text];
+}
+
 @end

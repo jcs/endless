@@ -238,7 +238,7 @@ NSString * const LABEL = @"L";
 - (void)menuShare
 {
 	TUSafariActivity *activity = [[TUSafariActivity alloc] init];
-	UIActivityViewController *avc = [[UIActivityViewController alloc] initWithActivityItems:@[ [[[appDelegate webViewController] curWebViewTab] url] ] applicationActivities:@[ activity ]];
+	UIActivityViewController *avc = [[UIActivityViewController alloc] initWithActivityItems:@[ [[appDelegate webViewController] curWebViewTab] ] applicationActivities:@[ activity ]];
 	
 	UIPopoverPresentationController *popover = [avc popoverPresentationController];
 	if (popover) {
