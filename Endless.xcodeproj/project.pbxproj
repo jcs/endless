@@ -43,8 +43,6 @@
 		01AFEB371B4DBA8D00A02482 /* BookmarkController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01AFEB361B4DBA8D00A02482 /* BookmarkController.m */; };
 		01AFEB491B4ED48000A02482 /* Bookmark.m in Sources */ = {isa = PBXBuildFile; fileRef = 01AFEB481B4ED48000A02482 /* Bookmark.m */; };
 		01AFEB4F1B4F2A5F00A02482 /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 01AFEB4D1B4F2A5F00A02482 /* OnePasswordExtension.m */; };
-		01B834921E12DC8D0050EAB5 /* DonationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01B834901E12DC8D0050EAB5 /* DonationViewController.m */; };
-		01B834951E12F4E70050EAB5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01B834941E12F4E70050EAB5 /* StoreKit.framework */; };
 		01BFEE431E3BD6E60069AC83 /* URLBlockerRuleController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01BFEE421E3BD6E60069AC83 /* URLBlockerRuleController.m */; };
 		01BFEE461E3BE1820069AC83 /* RuleEditorRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 01BFEE451E3BE1820069AC83 /* RuleEditorRow.m */; };
 		01BFEE4A1E3D3CD60069AC83 /* urlblocker.json in Resources */ = {isa = PBXBuildFile; fileRef = 01BFEE491E3D3CD60069AC83 /* urlblocker.json */; };
@@ -182,9 +180,6 @@
 		01AFEB481B4ED48000A02482 /* Bookmark.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bookmark.m; sourceTree = "<group>"; };
 		01AFEB4C1B4F2A5F00A02482 /* OnePasswordExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnePasswordExtension.h; sourceTree = "<group>"; };
 		01AFEB4D1B4F2A5F00A02482 /* OnePasswordExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OnePasswordExtension.m; sourceTree = "<group>"; };
-		01B8348F1E12DC8D0050EAB5 /* DonationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DonationViewController.h; path = Endless/DonationViewController.h; sourceTree = "<group>"; };
-		01B834901E12DC8D0050EAB5 /* DonationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DonationViewController.m; path = Endless/DonationViewController.m; sourceTree = "<group>"; };
-		01B834941E12F4E70050EAB5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		01BFEE411E3BD6E60069AC83 /* URLBlockerRuleController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLBlockerRuleController.h; sourceTree = "<group>"; };
 		01BFEE421E3BD6E60069AC83 /* URLBlockerRuleController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLBlockerRuleController.m; sourceTree = "<group>"; };
 		01BFEE441E3BE1820069AC83 /* RuleEditorRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuleEditorRow.h; sourceTree = "<group>"; };
@@ -253,7 +248,6 @@
 				016890E4201B808900CDD024 /* AVFoundation.framework in Frameworks */,
 				019516D11B7D8B400078586A /* libz.dylib in Frameworks */,
 				016B2FCD1A5648AE002D2730 /* WebKit.framework in Frameworks */,
-				01B834951E12F4E70050EAB5 /* StoreKit.framework in Frameworks */,
 				AA9A5FECA2E668F834FDECD9 /* libPods-Endless.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -284,7 +278,6 @@
 				01801EC11A3360B1002B4718 /* Resources */,
 				01AFEB4A1B4F2A5F00A02482 /* External */,
 				01801E951A32CA2A002B4718 /* Supporting Files */,
-				01B834961E145D3E0050EAB5 /* App-Store-only Files */,
 				018333D81A35727C00670CD1 /* Endless Tests */,
 				01AFB5A1201B934D002529A9 /* Open in Endless */,
 				01801E931A32CA2A002B4718 /* Products */,
@@ -455,15 +448,6 @@
 			path = External;
 			sourceTree = "<group>";
 		};
-		01B834961E145D3E0050EAB5 /* App-Store-only Files */ = {
-			isa = PBXGroup;
-			children = (
-				01B8348F1E12DC8D0050EAB5 /* DonationViewController.h */,
-				01B834901E12DC8D0050EAB5 /* DonationViewController.m */,
-			);
-			name = "App-Store-only Files";
-			sourceTree = "<group>";
-		};
 		01FE82991FC0DF10006E5777 /* Icons */ = {
 			isa = PBXGroup;
 			children = (
@@ -482,7 +466,6 @@
 			children = (
 				01AFB5B0201B96B7002529A9 /* MobileCoreServices.framework */,
 				016890E3201B808900CDD024 /* AVFoundation.framework */,
-				01B834941E12F4E70050EAB5 /* StoreKit.framework */,
 				019516D01B7D8B400078586A /* libz.dylib */,
 				016B2FCC1A5648AE002D2730 /* WebKit.framework */,
 				018333EB1A357D8B00670CD1 /* libPods-OCMock.a */,
@@ -514,7 +497,6 @@
 				01801E8E1A32CA2A002B4718 /* Sources */,
 				01801E8F1A32CA2A002B4718 /* Frameworks */,
 				01801E901A32CA2A002B4718 /* Resources */,
-				F52C9B85FC42EA46D19EBE17 /* [CP] Embed Pods Frameworks */,
 				82F555D0CE165063CE93824B /* [CP] Copy Pods Resources */,
 				01AFB5AF201B934D002529A9 /* Embed App Extensions */,
 			);
@@ -536,8 +518,6 @@
 				018333D31A35727C00670CD1 /* Sources */,
 				018333D41A35727C00670CD1 /* Frameworks */,
 				018333D51A35727C00670CD1 /* Resources */,
-				14404A703B001A556B0175E0 /* [CP] Embed Pods Frameworks */,
-				75943DA6D0429C51AFD96FA3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -583,7 +563,7 @@
 								enabled = 1;
 							};
 							com.apple.InAppPurchase = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.SafariKeychain = {
 								enabled = 0;
@@ -692,36 +672,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		14404A703B001A556B0175E0 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Endless Tests/Pods-Endless Tests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		75943DA6D0429C51AFD96FA3 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Endless Tests/Pods-Endless Tests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		82F555D0CE165063CE93824B /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -729,13 +679,15 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Endless/Pods-Endless-resources.sh",
-				$PODS_CONFIGURATION_BUILD_DIR/InAppSettingsKit/InAppSettingsKit.bundle,
-				$PODS_CONFIGURATION_BUILD_DIR/TUSafariActivity/TUSafariActivity.bundle,
+				"${PODS_CONFIGURATION_BUILD_DIR}/InAppSettingsKit/InAppSettingsKit.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/TUSafariActivity/TUSafariActivity.bundle",
 				"${PODS_ROOT}/XLForm/XLForm/XLForm.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/InAppSettingsKit.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TUSafariActivity.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/XLForm.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -760,21 +712,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F52C9B85FC42EA46D19EBE17 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Endless/Pods-Endless-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -784,7 +721,6 @@
 			files = (
 				01D741281A44DF1C007B7033 /* WebViewMenuController.m in Sources */,
 				01D7412F1A466AF0007B7033 /* NSString+JavascriptEscape.m in Sources */,
-				01B834921E12DC8D0050EAB5 /* DonationViewController.m in Sources */,
 				014E68A51B9BED3300D98A0A /* HostSettingsController.m in Sources */,
 				01559ADE2041E28A006F6DBB /* HistoryController.m in Sources */,
 				01F2AE391B7FEF5E00D5651A /* SSLCertificate.m in Sources */,
@@ -932,7 +868,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -972,14 +908,14 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREFIX_HEADER = "Endless/Endless-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = "SHOW_DONATION_CONTROLLER=1";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -995,7 +931,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Endless/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.jcs.endless;
 				PRODUCT_NAME = Endless;
@@ -1013,7 +949,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Endless/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.jcs.endless;
 				PRODUCT_NAME = Endless;
@@ -1095,6 +1031,7 @@
 				DEVELOPMENT_TEAM = J9PM5B7FE7;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "Open in Endless/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.jcs.endless.Open-in-Endless";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1119,6 +1056,7 @@
 				DEVELOPMENT_TEAM = J9PM5B7FE7;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "Open in Endless/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.jcs.endless.Open-in-Endless";
 				PRODUCT_NAME = "$(TARGET_NAME)";
