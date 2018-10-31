@@ -18,10 +18,6 @@
 #import "OnePasswordExtension.h"
 #import "TUSafariActivity.h"
 
-#ifdef SHOW_DONATION_CONTROLLER
-#include "DonationViewController.h"
-#endif
-
 @implementation WebViewMenuController {
 	AppDelegate *appDelegate;
 	IASKAppSettingsViewController *appSettingsViewController;
@@ -233,13 +229,6 @@ NSString * const LABEL = @"L";
 		appSettingsViewController.delegate = [appDelegate webViewController];
 		appSettingsViewController.showDoneButton = YES;
 		appSettingsViewController.showCreditsFooter = NO;
-		
-#ifdef SHOW_DONATION_CONTROLLER
-		if (![DonationViewController canMakeDonation])
-			[appSettingsViewController setHiddenKeys:[NSSet setWithArray:@[ @"open_donation" ]]];
-#else
-		[appSettingsViewController setHiddenKeys:[NSSet setWithArray:@[ @"open_donation" ]]];
-#endif
 	}
 	
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:appSettingsViewController];

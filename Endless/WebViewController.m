@@ -16,10 +16,6 @@
 #import "WebViewMenuController.h"
 #import "WYPopoverController.h"
 
-#ifdef SHOW_DONATION_CONTROLLER
-#import "DonationViewController.h"
-#endif
-
 #import "IASKSettingsReader.h"
 
 @implementation WebViewController {
@@ -1053,16 +1049,6 @@
 	return YES;
 }
 
-- (void)settingsViewController:(IASKAppSettingsViewController *)sender buttonTappedForSpecifier:(IASKSpecifier *)specifier
-{
-	if ([[specifier key] isEqualToString:@"open_donation"]) {
-#ifdef SHOW_DONATION_CONTROLLER
-		DonationViewController *dvc = [[DonationViewController alloc] initWithNibName:nil bundle:nil];
-		[[sender navigationController] pushViewController:dvc animated:YES];
-#endif
-	}
-}
-	
 - (void)settingStaged:(NSNotification *)notification
 {
 	NSString *prop = [[[notification userInfo] allKeys] firstObject];
