@@ -335,6 +335,8 @@ static NSMutableDictionary <NSData *, NSMutableDictionary *> *certCache = nil;
 		return @"TLS 1.1";
 	case kTLSProtocol12:
 		return @"TLS 1.2";
+	case kTLSProtocol13:
+		return @"TLS 1.3";
 	default:
 		return [NSString stringWithFormat:@"Unknown (%d)", [self negotiatedProtocol]];
 	}
@@ -655,6 +657,10 @@ static NSMutableDictionary <NSData *, NSMutableDictionary *> *certCache = nil;
 		return @"TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256";
 	case TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384:
 		return @"TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384";
+	case TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256:
+		return @"TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256";
+	case TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256:
+		return @"TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256";
 	case TLS_EMPTY_RENEGOTIATION_INFO_SCSV:
 		return @"TLS_EMPTY_RENEGOTIATION_INFO_SCSV";
 	case SSL_RSA_WITH_RC2_CBC_MD5:
