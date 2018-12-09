@@ -275,12 +275,19 @@ static NSMutableDictionary <NSData *, NSMutableDictionary *> *certCache = nil;
 		return nil;
 	}
 	
-	NSObject *ret = [arr objectAtIndex:index];
-	if (ret == nil) {
-		NSLog(@"[SSLCertificate] array object at index %lu is nil", (long)index);
+	NSObject *ret;
+	@try {
+		ret = [arr objectAtIndex:index];
+		if (ret == nil) {
+			NSLog(@"[SSLCertificate] array object at index %lu is nil", (long)index);
+			return nil;
+		}
+	}
+	@catch(NSException *e) {
+		NSLog(@"[SSLCertificate] failed fetching object %lu from array: %@", (long)index, e);
 		return nil;
 	}
-	
+		
 	if (cType != nil && ![ret isKindOfClass:cType]) {
 		NSLog(@"[SSLCertificate] array object at index %lu is type %@, not %@", (long)index, NSStringFromClass([ret class]), cType);
 		return nil;

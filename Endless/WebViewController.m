@@ -237,7 +237,7 @@
 {
 	[super encodeRestorableStateWithCoder:coder];
 	
-	NSMutableArray *wvtd = [[NSMutableArray alloc] initWithCapacity:webViewTabs.count - 1];
+	NSMutableArray *wvtd = [[NSMutableArray alloc] initWithCapacity:MAX(webViewTabs.count - 1, 1)];
 	for (WebViewTab *wvt in webViewTabs) {
 		if (wvt.url == nil)
 			continue;
