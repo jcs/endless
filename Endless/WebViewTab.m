@@ -961,7 +961,7 @@
 /* UIActivityItemSource for URL sharing */
 - (id)activityViewControllerPlaceholderItem:(UIActivityViewController *)activityViewController
 {
-	return [[self title] text];
+	return [self url];
 }
 
 - (id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(UIActivityType)activityType
