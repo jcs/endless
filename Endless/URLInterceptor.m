@@ -552,10 +552,18 @@ static NSString *_javascriptToInject;
 				[newRequest setHTTPMethod:@"GET"];
 			
 			/* strangely, if we pass [NSURL URLWithString:/ relativeToURL:[NSURL https://blah/asdf/]] as the URL for the new request, it treats it as just "/" with no domain information so we have to build the relative URL, turn it into a string, then back to a URL */
-			NSString *aURL = [[NSURL URLWithString:newURL relativeToURL:[[self actualRequest] URL]] absoluteString];
-			[newRequest setURL:[NSURL URLWithString:aURL]];
+			NSURLComponents *newURLC = [[NSURLComponents alloc] initWithString:[[NSURL URLWithString:newURL relativeToURL:[[self actualRequest] URL]] absoluteString]];
+			
+			/* if we have no anchor in the new location, but the original request did, we need to preserve it */
+			if ([newURLC fragment] == nil || [[newURLC fragment] isEqualToString:@""]) {
+				if ([[[self actualRequest] URL] fragment] != nil && ![[[[self actualRequest] URL] fragment] isEqualToString:@""])
+					[newURLC setFragment:[[[self actualRequest] URL] fragment]];
+			}
+			
+			[newRequest setURL:[newURLC URL]];
+
 #ifdef TRACE
-			NSLog(@"[URLInterceptor] [Tab %@] got %ld redirect from %@ to %@", wvt.tabIndex, (long)response.statusCode, [[[self actualRequest] URL] absoluteString], aURL);
+			NSLog(@"[URLInterceptor] [Tab %@] got %ld redirect from %@ to %@", wvt.tabIndex, (long)response.statusCode, [[[self actualRequest] URL] absoluteString], [[newRequest URL] absoluteURL]);
 #endif
 			[newRequest setMainDocumentURL:[[self actualRequest] mainDocumentURL]];
 			
