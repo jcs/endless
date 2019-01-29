@@ -1,7 +1,5 @@
 ### Endless
 
-[![https://endl.es/appstore.svg](https://endl.es/appstore.svg)](https://itunes.apple.com/us/app/endless-browser/id974745755?mt=8)
-
 An open-source MobileSafari-like web browser for iOS ([wrapping around
 UIWebView](#infrequently-asked-questions)) with a design goal of increased security and privacy.
 
@@ -16,7 +14,7 @@ form, with or without modification, is not permitted.
 Please see the [LICENSE](https://github.com/jcs/endless/blob/master/LICENSE)
 for redistribution terms.
 Commercial redistribution license exclusions are available; please
-[contact me](https://jcs.org/about) for more information.
+[contact me](https://jcs.org/contact) for more information.
 
 #### Screenshots
 
