@@ -1,9 +1,11 @@
 /*
  * Endless
- * Copyright (c) 2014-2017 joshua stein <jcs@jcs.org>
+ * Copyright (c) 2014-2018 joshua stein <jcs@jcs.org>
  *
  * See LICENSE file for redistribution terms.
  */
+
+#import <AVFoundation/AVFoundation.h>
 
 #import "AppDelegate.h"
 #import "Bookmark.h"
@@ -26,6 +28,7 @@
 #ifdef USE_DUMMY_URLINTERCEPTOR
 	[NSURLProtocol registerClass:[DummyURLInterceptor class]];
 #else
+	[URLInterceptor setup];
 	[NSURLProtocol registerClass:[URLInterceptor class]];
 #endif
 
@@ -54,6 +57,10 @@
 	self.window.rootViewController = [[WebViewController alloc] init];
 	self.window.rootViewController.restorationIdentifier = @"WebViewController";
 	
+	/* setting AVAudioSessionCategoryAmbient will prevent audio from UIWebView from pausing already-playing audio from other apps */
+	[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+	[[AVAudioSession sharedInstance] setActive:NO error:nil];
+	
 	return YES;
 }
 
@@ -61,6 +68,10 @@
 {
 	[self.window makeKeyAndVisible];
 
+	if (launchOptions != nil && [launchOptions objectForKey:UIApplicationLaunchOptionsShortcutItemKey]) {
+		[self handleShortcut:[launchOptions objectForKey:UIApplicationLaunchOptionsShortcutItemKey]];
+	}
+	
 	return YES;
 }
 
@@ -105,8 +116,25 @@
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
 #ifdef TRACE
-	NSLog(@"[AppDelegate] request to open url \"%@\"", url);
+	NSLog(@"[AppDelegate] request to open url at launch: %@", url);
 #endif
+	if ([[[url scheme] lowercaseString] isEqualToString:@"endlesshttp"])
+		url = [NSURL URLWithString:[[url absoluteString] stringByReplacingCharactersInRange:NSMakeRange(0, [@"endlesshttp" length]) withString:@"http"]];
+	else if ([[[url scheme] lowercaseString] isEqualToString:@"endlesshttps"])
+		url = [NSURL URLWithString:[[url absoluteString] stringByReplacingCharactersInRange:NSMakeRange(0, [@"endlesshttps" length]) withString:@"https"]];
+
+	/* delay until we're done drawing the UI */
+	self.urlToOpenAtLaunch = url;
+	
+	return YES;
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+#ifdef TRACE
+	NSLog(@"[AppDelegate] request to open url: %@", url);
+#endif
+
 	if ([[[url scheme] lowercaseString] isEqualToString:@"endlesshttp"])
 		url = [NSURL URLWithString:[[url absoluteString] stringByReplacingCharactersInRange:NSMakeRange(0, [@"endlesshttp" length]) withString:@"http"]];
 	else if ([[[url scheme] lowercaseString] isEqualToString:@"endlesshttps"])
@@ -116,6 +144,12 @@
 	[[self webViewController] addNewTabForURL:url];
 	
 	return YES;
+}
+
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler
+{
+	[self handleShortcut:shortcutItem];
+	completionHandler(YES);
 }
 
 - (BOOL)application:(UIApplication *)application shouldAllowExtensionPointIdentifier:(NSString *)extensionPointIdentifier {
@@ -240,7 +274,7 @@
 		}
 		
 		if ([[keyCommand input] isEqualToString:@"t"]) {
-			[[self webViewController] addNewTabForURL:nil forRestoration:NO withCompletionBlock:^(BOOL finished) {
+			[[self webViewController] addNewTabForURL:nil forRestoration:NO withAnimation:WebViewTabAnimationDefault withCompletionBlock:^(BOOL finished) {
 				[[self webViewController] focusUrlField];
 			}];
 			return;
@@ -340,6 +374,19 @@
 	}
 	
 	return NO;
+}
+
+- (void)handleShortcut:(UIApplicationShortcutItem *)shortcutItem
+{
+	if ([[shortcutItem type] containsString:@"OpenNewTab"]) {
+		[[self webViewController] dismissViewControllerAnimated:YES completion:nil];
+		[[self webViewController] addNewTabFromToolbar:nil];
+	} else if ([[shortcutItem type] containsString:@"ClearData"]) {
+		[[self webViewController] removeAllTabs];
+		[[self cookieJar] clearAllNonWhitelistedData];
+	} else {
+		NSLog(@"[AppDelegate] need to handle action %@", [shortcutItem type]);
+	}
 }
 
 @end

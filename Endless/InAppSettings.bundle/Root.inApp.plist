@@ -33,6 +33,16 @@
 			<false/>
 		</dict>
 		<dict>
+			<key>Title</key>
+			<string>Dark app icon</string>
+			<key>Key</key>
+			<string>dark_icon</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
 			<key>DefaultValue</key>
 			<string>DuckDuckGo</string>
 			<key>Values</key>
@@ -53,6 +63,16 @@
 			<string>Search engine</string>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Auto-complete search results</string>
+			<key>Key</key>
+			<string>search_engine_live</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -155,16 +175,6 @@
 			<string>Miscellaneous</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>Key</key>
-			<string>open_donation</string>
-			<key>Title</key>
-			<string>Fund Endless development</string>
-			<key>Type</key>
-			<string>IASKButtonSpecifier</string>
-			<key>IASKTextAlignment</key>
-			<string>IASKUITextAlignmentLeft</string>
 		</dict>
 		<dict>
 			<key>Key</key>

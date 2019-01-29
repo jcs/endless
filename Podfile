@@ -1,4 +1,4 @@
-platform :ios, "10.0"
+platform :ios, "11.1"
 
 target "Endless" do
   pod "InAppSettingsKit"
@@ -7,6 +7,7 @@ target "Endless" do
   pod "OrderedDictionary"
   pod "XLForm", :git => "https://github.com/jcs/XLForm.git"
   pod "TUSafariActivity"
+  pod "VForceTouch"
 end
 
 target "Endless Tests" do

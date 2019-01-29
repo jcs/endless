@@ -27,6 +27,14 @@
 static AppDelegate *appDelegate;
 static BOOL sendDNT = true;
 static NSMutableArray *tmpAllowed;
+static NSCache *injectCache;
+
+#define INJECT_CACHE_SIZE 20
+
++ (void)setup
+{
+	[[NSNotificationCenter defaultCenter] addObserver:[URLInterceptor class] selector:@selector(clearInjectCache) name:HOST_SETTINGS_CHANGED object:nil];
+}
 
 static NSString *_javascriptToInject;
 + (NSString *)javascriptToInject
@@ -37,6 +45,37 @@ static NSString *_javascriptToInject;
 	}
 	
 	return _javascriptToInject;
+}
+
++ (void)clearInjectCache
+{
+	if (injectCache != nil)
+		[injectCache removeAllObjects];
+}
+
++ (NSString *)javascriptToInjectForURL:(NSURL *)url
+{
+	if (injectCache == nil) {
+		injectCache = [[NSCache alloc] init];
+		[injectCache setCountLimit:INJECT_CACHE_SIZE];
+	}
+	
+	NSString *c = [injectCache objectForKey:[url host]];
+	if (c != nil)
+		return c;
+	
+	NSString *j = [self javascriptToInject];
+	HostSettings *hs = [HostSettings settingsOrDefaultsForHost:[url host]];
+	
+	NSString *block_rtc = @"true";
+	if ([hs boolSettingOrDefault:HOST_SETTINGS_KEY_ALLOW_WEBRTC])
+		block_rtc = @"false";
+
+	j = [j stringByReplacingOccurrencesOfString:@"\"##BLOCK_WEBRTC##\"" withString:block_rtc];
+	
+	[injectCache setObject:j forKey:[url host]];
+
+	return j;
 }
 
 + (void)setSendDNT:(BOOL)val
@@ -85,7 +124,7 @@ static NSString *_javascriptToInject;
 		return NO;
 	
 	NSString *scheme = [[[request URL] scheme] lowercaseString];
-	if ([scheme isEqualToString:@"data"] || [scheme isEqualToString:@"file"])
+	if ([scheme isEqualToString:@"data"] || [scheme isEqualToString:@"file"] || [scheme isEqualToString:@"mailto"])
 		/* can't do anything for these URLs */
 		return NO;
 	
@@ -189,7 +228,19 @@ static NSString *_javascriptToInject;
 	}
 	
 	if (wvt == nil && [[self class] isURLTemporarilyAllowed:[request URL]])
-		wvt = [[[appDelegate webViewController] webViewTabs] firstObject];
+		wvt = [[appDelegate webViewController] curWebViewTab];
+
+	/*
+	 * Videos load without our modified User-Agent (which normally has a per-tab hash appended to it to be able to match
+	 * it to the proper tab) but it does have its own UA which starts with "AppleCoreMedia/".  Assume it came from the
+	 * current tab and hope for the best.
+	 */
+	if (wvt == nil && ([[[[request URL] scheme] lowercaseString] isEqualToString:@"http"] || [[[[request URL] scheme] lowercaseString] isEqualToString:@"https"]) && [[ua substringToIndex:15] isEqualToString:@"AppleCoreMedia/"]) {
+#ifdef TRACE
+		NSLog(@"[URLInterceptor] AppleCoreMedia request with no matching WebViewTab, binding to current tab: %@", [request URL]);
+#endif
+		wvt = [[appDelegate webViewController] curWebViewTab];
+	}
 	
 	if (wvt == nil) {
 		NSLog(@"[URLInterceptor] request for %@ with no matching WebViewTab! (main URL %@, UA hash %@)", [request URL], [request mainDocumentURL], wvthash);
@@ -407,7 +458,7 @@ static NSString *_javascriptToInject;
 	
 	/* rewrite or inject Content-Security-Policy (and X-Webkit-CSP just in case) headers */
 	NSString *CSPheader = nil;
-	NSString *CSPmode = [self.originHostSettings setting:HOST_SETTINGS_KEY_CSP];
+	NSString *CSPmode = [self.originHostSettings settingOrDefault:HOST_SETTINGS_KEY_CSP];
 
 	if ([CSPmode isEqualToString:HOST_SETTINGS_CSP_STRICT])
 		CSPheader = @"connect-src 'none'; default-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; sandbox allow-forms allow-top-navigation; script-src 'none'; style-src 'unsafe-inline' *; report-uri;";
@@ -501,10 +552,18 @@ static NSString *_javascriptToInject;
 				[newRequest setHTTPMethod:@"GET"];
 			
 			/* strangely, if we pass [NSURL URLWithString:/ relativeToURL:[NSURL https://blah/asdf/]] as the URL for the new request, it treats it as just "/" with no domain information so we have to build the relative URL, turn it into a string, then back to a URL */
-			NSString *aURL = [[NSURL URLWithString:newURL relativeToURL:[[self actualRequest] URL]] absoluteString];
-			[newRequest setURL:[NSURL URLWithString:aURL]];
+			NSURLComponents *newURLC = [[NSURLComponents alloc] initWithString:[[NSURL URLWithString:newURL relativeToURL:[[self actualRequest] URL]] absoluteString]];
+			
+			/* if we have no anchor in the new location, but the original request did, we need to preserve it */
+			if ([newURLC fragment] == nil || [[newURLC fragment] isEqualToString:@""]) {
+				if ([[[self actualRequest] URL] fragment] != nil && ![[[[self actualRequest] URL] fragment] isEqualToString:@""])
+					[newURLC setFragment:[[[self actualRequest] URL] fragment]];
+			}
+			
+			[newRequest setURL:[newURLC URL]];
+
 #ifdef TRACE
-			NSLog(@"[URLInterceptor] [Tab %@] got %ld redirect from %@ to %@", wvt.tabIndex, (long)response.statusCode, [[[self actualRequest] URL] absoluteString], aURL);
+			NSLog(@"[URLInterceptor] [Tab %@] got %ld redirect from %@ to %@", wvt.tabIndex, (long)response.statusCode, [[[self actualRequest] URL] absoluteString], [[newRequest URL] absoluteURL]);
 #endif
 			[newRequest setMainDocumentURL:[[self actualRequest] mainDocumentURL]];
 			
@@ -512,7 +571,7 @@ static NSString *_javascriptToInject;
 
 			/* if we're being redirected from secure back to insecure, we might be stuck in a loop from an HTTPSEverywhere rule */
 			if ([[[[self actualRequest] URL] scheme] isEqualToString:@"https"] && [[[newRequest URL] scheme] isEqualToString:@"http"])
-				[HTTPSEverywhere noteInsecureRedirectionForURL:[[self actualRequest] URL]];
+				[HTTPSEverywhere noteInsecureRedirectionForURL:[[self actualRequest] URL] toURL:[newRequest URL]];
 			
 			/* process it all over again */
 			[NSURLProtocol removePropertyForKey:REWRITTEN_KEY inRequest:newRequest];
@@ -569,7 +628,7 @@ static NSString *_javascriptToInject;
 				NSMutableData *tData = [[NSMutableData alloc] init];
 				if (contentType == CONTENT_TYPE_HTML)
 					/* prepend a doctype to force into standards mode and throw in any javascript overrides */
-					[tData appendData:[[NSString stringWithFormat:@"<!DOCTYPE html><script type=\"text/javascript\" nonce=\"%@\">%@</script>", [self cspNonce], [[self class] javascriptToInject]] dataUsingEncoding:NSUTF8StringEncoding]];
+					[tData appendData:[[NSString stringWithFormat:@"<!DOCTYPE html><script type=\"text/javascript\" nonce=\"%@\">%@</script>", [self cspNonce], [[self class] javascriptToInjectForURL:[[self actualRequest] mainDocumentURL]]] dataUsingEncoding:NSUTF8StringEncoding]];
 				
 				[tData appendData:newData];
 				newData = tData;

@@ -1,12 +1,14 @@
 /*
  * Endless
- * Copyright (c) 2014-2016 joshua stein <jcs@jcs.org>
+ * Copyright (c) 2014-2018 joshua stein <jcs@jcs.org>
  *
  * See LICENSE file for redistribution terms.
  */
 
 #import "AppDelegate.h"
 #import "BookmarkController.h"
+#import "HistoryController.h"
+#import "SearchResultsController.h"
 #import "SSLCertificateViewController.h"
 #import "URLInterceptor.h"
 #import "WebViewController.h"
@@ -14,9 +16,7 @@
 #import "WebViewMenuController.h"
 #import "WYPopoverController.h"
 
-#ifdef SHOW_DONATION_CONTROLLER
-#import "DonationViewController.h"
-#endif
+#import "IASKSettingsReader.h"
 
 @implementation WebViewController {
 	AppDelegate *appDelegate;
@@ -36,8 +36,10 @@
 	UIToolbar *tabToolbar;
 	UILabel *tabCount;
 	int keyboardHeight;
+	BOOL keyboardShowing;
 	
 	UIButton *backButton;
+	UILongPressGestureRecognizer *historyRecognizer;
 	UIButton *forwardButton;
 	UIButton *tabsButton;
 	UIButton *settingsButton;
@@ -53,6 +55,7 @@
 	WYPopoverController *popover;
 	
 	BookmarkController *bookmarks;
+	SearchResultsController *searchResults;
 }
 
 - (void)loadView
@@ -98,6 +101,10 @@
 	[backButton setImage:backImage forState:UIControlStateNormal];
 	[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
 	[toolbar addSubview:backButton];
+
+	historyRecognizer = [[UILongPressGestureRecognizer alloc] init];
+	[historyRecognizer addTarget:self action:@selector(showHistory:)];
+	[backButton addGestureRecognizer:historyRecognizer];
 	
 	forwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	UIImage *forwardImage = [[UIImage imageNamed:@"forward"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -117,11 +124,12 @@
 	[urlField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	[urlField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[urlField setDelegate:self];
+	[urlField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
 	[toolbar addSubview:urlField];
 	
 	lockIcon = [UIButton buttonWithType:UIButtonTypeCustom];
 	[lockIcon setFrame:CGRectMake(0, 0, 24, 16)];
-	[lockIcon setImage:[UIImage imageNamed:@"lock"] forState:UIControlStateNormal];
+	[lockIcon setImage:[[UIImage imageNamed:@"lock"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
 	[[lockIcon imageView] setContentMode:UIViewContentModeScaleAspectFit];
 	[lockIcon addTarget:self action:@selector(showSSLCertificate) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -189,7 +197,8 @@
 	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 	[center addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
 	[center addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-	
+	[center addObserver:self selector:@selector(settingStaged:) name:kIASKAppSettingChanged object:nil];
+
 	[[appDelegate window] addSubview:self.view];
 
 	[self updateSearchBarDetails];
@@ -228,7 +237,7 @@
 {
 	[super encodeRestorableStateWithCoder:coder];
 	
-	NSMutableArray *wvtd = [[NSMutableArray alloc] initWithCapacity:webViewTabs.count - 1];
+	NSMutableArray *wvtd = [[NSMutableArray alloc] initWithCapacity:MAX(webViewTabs.count - 1, 1)];
 	for (WebViewTab *wvt in webViewTabs) {
 		if (wvt.url == nil)
 			continue;
@@ -250,7 +259,7 @@
 #ifdef TRACE
 		NSLog(@"[WebViewController] restoring tab %d with %@", i, params);
 #endif
-		WebViewTab *wvt = [self addNewTabForURL:[params objectForKey:@"url"] forRestoration:YES withCompletionBlock:nil];
+		WebViewTab *wvt = [self addNewTabForURL:[params objectForKey:@"url"] forRestoration:YES withAnimation:WebViewTabAnimationHidden withCompletionBlock:nil];
 		[[wvt title] setText:[params objectForKey:@"title"]];
 	}
 	
@@ -276,6 +285,13 @@
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	[userDefaults removeObjectForKey:STATE_RESTORE_TRY_KEY];
 	[userDefaults synchronize];
+	
+	if ([appDelegate urlToOpenAtLaunch]) {
+		NSURL *u = [appDelegate urlToOpenAtLaunch];
+		[appDelegate setUrlToOpenAtLaunch:nil];
+		
+		[self addNewTabForURL:u];
+	}
 }
 
 /* called when we've become visible (possibly again, from app delegate applicationDidBecomeActive) */
@@ -301,7 +317,7 @@
 - (void)viewIsNoLongerVisible
 {
 	if ([urlField isFirstResponder]) {
-		[urlField resignFirstResponder];
+		[self unfocusUrlField];
 	}
 }
 
@@ -310,15 +326,22 @@
 	CGRect keyboardStart = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
 	CGRect keyboardEnd = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
 	
+	/* iOS 11.4 started sending additional UIKeyboardWillShowNotification notifications when the user taps on the URL bar when the keyboard is already up, so keyboardHeight ends up being 0 (because there is no change in FrameBegin->FrameEnd) and disappears.  Keep track of whether the keyboard is showing and ignore these duplicate events until we get a UIKeyboardWillHideNotification event. */
+	if (keyboardStart.origin.y == keyboardEnd.origin.y && keyboardShowing)
+		return;
+	
 	/* on devices with a bluetooth keyboard attached, both values should be the same for a 0 height */
 	keyboardHeight = keyboardStart.origin.y - keyboardEnd.origin.y;
 
+	keyboardShowing = (keyboardHeight > 0);
+	
 	[self viewDidLayoutSubviews];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
 	keyboardHeight = 0;
+	keyboardShowing = NO;
 	[self viewDidLayoutSubviews];
 }
 
@@ -351,17 +374,17 @@
 	
 	/* keep tabScroller the size of the root frame minus the toolbar */
 	if (self.toolbarOnBottom) {
-		toolbar.frame = tabToolbar.frame = CGRectMake(0, self.view.bounds.size.height - TOOLBAR_HEIGHT - keyboardHeight, self.view.bounds.size.width, TOOLBAR_HEIGHT + keyboardHeight);
+		toolbar.frame = tabToolbar.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - keyboardHeight - (keyboardHeight ? 0 : self.view.safeAreaInsets.bottom), self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, TOOLBAR_HEIGHT + keyboardHeight);
+
 		progressBar.frame = CGRectMake(0, 0, toolbar.bounds.size.width, 2);
 		tabToolbarHairline.frame = CGRectMake(0, 0, toolbar.bounds.size.width, 1);
 
-		tabScroller.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
+		tabScroller.frame = CGRectMake(self.view.safeAreaInsets.left, 0, self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, self.view.bounds.size.height - TOOLBAR_HEIGHT - self.view.safeAreaInsets.bottom);
 
-		tabChooser.frame = CGRectMake(0, self.view.bounds.size.height - TOOLBAR_HEIGHT - 20, self.view.frame.size.width, 20);
+		tabChooser.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - 20 - self.view.safeAreaInsets.bottom, self.view.frame.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, 20);
 	}
-	else
-	{
-		toolbar.frame = tabToolbar.frame = CGRectMake(0, 0, self.view.bounds.size.width, TOOLBAR_HEIGHT);
+	else {
+		toolbar.frame = tabToolbar.frame = CGRectMake(0, self.view.safeAreaInsets.left, self.view.bounds.size.width - self.view.safeAreaInsets.left + self.view.safeAreaInsets.right, TOOLBAR_HEIGHT);
 		progressBar.frame = CGRectMake(0, TOOLBAR_HEIGHT - 2, toolbar.frame.size.width, 2);
 		tabToolbarHairline.frame = CGRectMake(0, TOOLBAR_HEIGHT - 0.5, toolbar.frame.size.width, 0.5);
 
@@ -371,12 +394,23 @@
 	}
 
 	if (self.darkInterface) {
-		[[appDelegate window] setBackgroundColor:[UIColor darkGrayColor]];
-		[wrapper setBackgroundColor:[UIColor darkGrayColor]];
+		if (HAS_OLED) {
+			[[appDelegate window] setBackgroundColor:[UIColor blackColor]];
+			[wrapper setBackgroundColor:[UIColor blackColor]];
+			
+			[tabScroller setBackgroundColor:[UIColor blackColor]];
+			
+			[toolbar setBackgroundColor:[UIColor blackColor]];
+		}
+		else {
+			[[appDelegate window] setBackgroundColor:[UIColor darkGrayColor]];
+			[wrapper setBackgroundColor:[UIColor darkGrayColor]];
+			
+			[tabScroller setBackgroundColor:[UIColor darkGrayColor]];
+			
+			[toolbar setBackgroundColor:[UIColor darkGrayColor]];
+		}
 		
-		[tabScroller setBackgroundColor:[UIColor darkGrayColor]];
-		
-		[toolbar setBackgroundColor:[UIColor darkGrayColor]];
 		[urlField setBackgroundColor:[UIColor grayColor]];
 		[tabToolbarHairline setBackgroundColor:[UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1.0]];
 
@@ -438,7 +472,7 @@
 	
 	if (bookmarks) {
 		if (self.toolbarOnBottom)
-			bookmarks.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, toolbar.frame.origin.y);
+			bookmarks.view.frame = CGRectMake(0, 0, self.view.bounds.size.width - self.view.safeAreaInsets.right, toolbar.frame.origin.y);
 		else
 			bookmarks.view.frame = CGRectMake(0, toolbar.frame.origin.y + toolbar.bounds.size.height, self.view.bounds.size.width, self.view.bounds.size.height);
 	}
@@ -448,7 +482,7 @@
 
 - (CGRect)frameForTabIndex:(NSUInteger)number
 {
-	return CGRectMake((self.view.frame.size.width * number), 0, self.view.frame.size.width, tabScroller.frame.size.height);
+	return CGRectMake((self.view.frame.size.width * number), 0, self.view.frame.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, tabScroller.frame.size.height);
 }
 
 - (CGRect)frameForUrlField
@@ -474,6 +508,12 @@
 - (void)focusUrlField
 {
 	[urlField becomeFirstResponder];
+}
+
+- (void)unfocusUrlField
+{
+	/* will unfocus and call textFieldDidEndEditing */
+	[urlField resignFirstResponder];
 }
 
 - (NSMutableArray *)webViewTabs
@@ -509,10 +549,10 @@
 
 - (WebViewTab *)addNewTabForURL:(NSURL *)url
 {
-	return [self addNewTabForURL:url forRestoration:NO withCompletionBlock:nil];
+	return [self addNewTabForURL:url forRestoration:NO withAnimation:WebViewTabAnimationDefault withCompletionBlock:nil];
 }
 
-- (WebViewTab *)addNewTabForURL:(NSURL *)url forRestoration:(BOOL)restoration withCompletionBlock:(void(^)(BOOL))block
+- (WebViewTab *)addNewTabForURL:(NSURL *)url forRestoration:(BOOL)restoration withAnimation:(WebViewTabAnimation)animation withCompletionBlock:(void(^)(BOOL))block
 {
 	WebViewTab *wvt = [[WebViewTab alloc] initWithFrame:[self frameForTabIndex:webViewTabs.count] withRestorationIdentifier:(restoration ? [url absoluteString] : nil)];
 	[wvt.webView.scrollView setDelegate:self];
@@ -527,10 +567,10 @@
 	[tabScroller addSubview:wvt.viewHolder];
 	[tabScroller bringSubviewToFront:toolbar];
 
-	void (^swapToTab)(BOOL) = ^(BOOL finished) {
+	void (^swapToTab)(BOOL) = ^(BOOL dummy) {
 		[self setCurTabIndex:(int)webViewTabs.count - 1];
 		
-		[self slideToCurrentTabWithCompletionBlock:^(BOOL finished) {
+		[self slideToCurrentTabWithAnimation:animation completionBlock:^(BOOL finished) {
 			if (url != nil)
 				[wvt loadURL:url];
 
@@ -538,19 +578,25 @@
 		}];
 	};
 	
-	if (!restoration) {
-		/* animate zooming out (if not already), switching to the new tab, then zoom back in */
+	if (animation == WebViewTabAnimationHidden) {
+		if (url != nil && !restoration)
+			[wvt loadURL:url];
+		if (block != nil)
+			block(YES);
+	} else {
 		if (showingTabs) {
 			swapToTab(YES);
 		}
 		else if (webViewTabs.count > 1) {
 			[self showTabsWithCompletionBlock:swapToTab];
 		}
-		else if (url != nil) {
-			[wvt loadURL:url];
+		else {
+			if (url != nil && !restoration)
+				[wvt loadURL:url];
+
+			if (block != nil)
+				block(YES);
 		}
-		else if (block != nil)
-			block(YES);
 	}
 
 	return wvt;
@@ -558,7 +604,7 @@
 
 - (void)addNewTabFromToolbar:(id)_id
 {
-	[self addNewTabForURL:nil forRestoration:NO withCompletionBlock:^(BOOL finished) {
+	[self addNewTabForURL:nil forRestoration:NO withAnimation:WebViewTabAnimationDefault withCompletionBlock:^(BOOL finished) {
 		[urlField becomeFirstResponder];
 	}];
 }
@@ -575,7 +621,7 @@
 	void (^swapToTab)(BOOL) = ^(BOOL finished) {
 		[self setCurTabIndex:[[t tabIndex] intValue]];
 		
-		[self slideToCurrentTabWithCompletionBlock:^(BOOL finished) {
+		[self slideToCurrentTabWithAnimation:WebViewTabAnimationDefault completionBlock:^(BOOL finished) {
 			[self showTabsWithCompletionBlock:nil];
 		}];
 	};
@@ -616,7 +662,7 @@
 		return;
 	
 	if ([urlField isFirstResponder]) {
-		[urlField resignFirstResponder];
+		[self unfocusUrlField];
 		return;
 	}
 	
@@ -657,7 +703,7 @@
 			else {
 				/* no tabs left, add one and zoom out */
 				[self reindexTabs];
-				[self addNewTabForURL:nil forRestoration:false withCompletionBlock:^(BOOL finished) {
+				[self addNewTabForURL:nil forRestoration:false withAnimation:WebViewTabAnimationDefault withCompletionBlock:^(BOOL finished) {
 					[urlField becomeFirstResponder];
 				}];
 				return;
@@ -685,7 +731,7 @@
 	} completion:^(BOOL finished) {
 		[self setCurTabIndex:curTabIndex];
 
-		[self slideToCurrentTabWithCompletionBlock:^(BOOL finished) {
+		[self slideToCurrentTabWithAnimation:WebViewTabAnimationDefault completionBlock:^(BOOL finished) {
 			showingTabs = true;
 			[self showTabs:nil];
 		}];
@@ -707,7 +753,7 @@
 	/* TODO: cache curURL and only do anything here if it changed, these changes might be expensive */
 
 	if (self.darkInterface)
-		[urlField setTextColor:[UIColor lightTextColor]];
+		[urlField setTextColor:[UIColor colorWithRed:0.9f green:0.9f blue:0.9f alpha:1.0f]];
 	else
 		[urlField setTextColor:[UIColor darkTextColor]];
 
@@ -718,23 +764,13 @@
 	}
 	else {
 		[urlField setTextAlignment:NSTextAlignmentCenter];
-		BOOL isEV = NO;
 		if (self.curWebViewTab && self.curWebViewTab.secureMode >= WebViewTabSecureModeSecure) {
 			[urlField setLeftView:lockIcon];
 			
-			if (self.curWebViewTab.secureMode == WebViewTabSecureModeSecureEV) {
-				/* wait until the page is done loading */
-				if ([progressBar progress] >= 1.0) {
-					[urlField setTextColor:[UIColor colorWithRed:0 green:(183.0/255.0) blue:(82.0/255.0) alpha:1.0]];
-			
-					if ([self.curWebViewTab.SSLCertificate evOrgName] == nil)
-						[urlField setText:NSLocalizedString(@"Unknown Organization", nil)];
-					else
-						[urlField setText:self.curWebViewTab.SSLCertificate.evOrgName];
-					
-					isEV = YES;
-				}
-			}
+			if (self.curWebViewTab.secureMode == WebViewTabSecureModeSecureEV)
+				[lockIcon setTintColor:[UIColor colorWithRed:0 green:(183.0/255.0) blue:(82.0/255.0) alpha:1.0]];
+			else
+				[lockIcon setTintColor:[UIColor blackColor]];
 		}
 		else if (self.curWebViewTab && self.curWebViewTab.secureMode == WebViewTabSecureModeMixed) {
 			[urlField setLeftView:brokenLockIcon];
@@ -743,42 +779,36 @@
 			[urlField setLeftView:nil];
 		}
 		
-		if (!isEV) {
-			NSString *host;
-			if (self.curWebViewTab.url == nil)
-				host = @"";
-			else {
-				host = [self.curWebViewTab.url host];
-				if (host == nil)
-					host = [self.curWebViewTab.url absoluteString];
-			}
-			
-			NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^www\\d*\\." options:NSRegularExpressionCaseInsensitive error:nil];
-			NSString *hostNoWWW = [regex stringByReplacingMatchesInString:host options:0 range:NSMakeRange(0, [host length]) withTemplate:@""];
-			
-			[urlField setText:hostNoWWW];
-			
-			if ([urlField.text isEqualToString:@""]) {
-				[urlField setTextAlignment:NSTextAlignmentLeft];
-			}
+		NSString *host;
+		if (self.curWebViewTab.url == nil)
+			host = @"";
+		else {
+			host = [self.curWebViewTab.url host];
+			if (host == nil)
+				host = [self.curWebViewTab.url absoluteString];
+		}
+		
+		NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^www\\d*\\." options:NSRegularExpressionCaseInsensitive error:nil];
+		NSString *hostNoWWW = [regex stringByReplacingMatchesInString:host options:0 range:NSMakeRange(0, [host length]) withTemplate:@""];
+		
+		[urlField setText:hostNoWWW];
+		
+		if ([urlField.text isEqualToString:@""]) {
+			[urlField setTextAlignment:NSTextAlignmentLeft];
 		}
 	}
 	
 	backButton.enabled = (self.curWebViewTab && self.curWebViewTab.canGoBack);
-	if (backButton.enabled) {
+	if (backButton.enabled)
 		[backButton setTintColor:(self.darkInterface ? [UIColor lightTextColor] : [progressBar tintColor])];
-	}
-	else {
+	else
 		[backButton setTintColor:[UIColor grayColor]];
-	}
 
 	forwardButton.hidden = !(self.curWebViewTab && self.curWebViewTab.canGoForward);
-	if (forwardButton.enabled) {
+	if (forwardButton.enabled)
 		[forwardButton setTintColor:(self.darkInterface ? [UIColor lightTextColor] : [progressBar tintColor])];
-	}
-	else {
+	else
 		[forwardButton setTintColor:[UIColor grayColor]];
-	}
 
 	[urlField setFrame:[self frameForUrlField]];
 }
@@ -829,7 +859,7 @@
 - (void)webViewTouched
 {
 	if ([urlField isFirstResponder]) {
-		[urlField resignFirstResponder];
+		[self unfocusUrlField];
 	}
 }
 
@@ -859,15 +889,36 @@
 	[self updateSearchBarDetails];
 }
 
+- (void)textFieldDidChange:(UITextField *)textField
+{
+	if (textField != urlField)
+		return;
+
+	/* if it looks like we're typing a url, stop searching */
+	if ([urlField text] == nil || [[urlField text] isEqualToString:@""] || [[urlField text] hasPrefix:@"http:"] || [[urlField text] hasPrefix:@"https:"] || [[urlField text] containsString:@"."]) {
+		[self hideSearchResults];
+		[self showBookmarksForEditing:NO];
+		return;
+	}
+	
+	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+	if (![userDefaults boolForKey:@"search_engine_live"])
+		return;
+	
+	[self hideBookmarks];
+	[self showSearchResultsForQuery:[urlField text]];
+}
+
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
-	if (textField != nil && textField != urlField)
+	if (textField != urlField)
 		return;
 
 #ifdef TRACE
 	NSLog(@"[WebViewController] ended editing with: %@", [textField text]);
 #endif
 	[self hideBookmarks];
+	[self hideSearchResults];
 
 	[UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
 		[urlField setTextAlignment:NSTextAlignmentCenter];
@@ -879,7 +930,8 @@
 	[self updateSearchBarDetails];
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
 	if (textField != urlField) {
 		return YES;
 	}
@@ -910,7 +962,7 @@
 			enteredURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", url]];
 	}
 	
-	[urlField resignFirstResponder]; /* will unfocus and call textFieldDidEndEditing */
+	[self unfocusUrlField];
 
 	if (enteredURL != nil)
 		[[self curWebViewTab] loadURL:enteredURL];
@@ -941,6 +993,18 @@
 	[self.curWebViewTab goForward];
 }
 
+- (void)showHistory:(id)_id
+{
+	[historyRecognizer setEnabled:NO];
+	
+	if ([[[self curWebViewTab] history] count] > 1) {
+		UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HistoryController alloc] initForTab:[self curWebViewTab]]];
+		[self presentViewController:navController animated:YES completion:nil];
+	}
+	
+	[historyRecognizer setEnabled:YES];
+}
+
 - (void)refresh
 {
 	[[self curWebViewTab] refresh];
@@ -964,8 +1028,12 @@
 	[popover.theme setOuterShadowColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.75]];
 	[popover.theme setOuterShadowOffset:CGSizeMake(0, 2)];
 	[popover.theme setOverlayColor:[UIColor clearColor]];
-	if ([self darkInterface])
-		[popover.theme setTintColor:[UIColor darkGrayColor]];
+	if ([self darkInterface]) {
+		if (HAS_OLED)
+			[popover.theme setTintColor:[UIColor blackColor]];
+		else
+			[popover.theme setTintColor:[UIColor darkGrayColor]];
+	}
 	[popover endThemeUpdates];
 	
 	[popover presentPopoverFromRect:CGRectMake(settingsButton.frame.origin.x, toolbar.frame.origin.y + settingsButton.frame.origin.y + settingsButton.frame.size.height - 30, settingsButton.frame.size.width, settingsButton.frame.size.height) inView:self.view permittedArrowDirections:WYPopoverArrowDirectionAny animated:YES options:WYPopoverAnimationOptionFadeWithScale];
@@ -981,13 +1049,18 @@
 	return YES;
 }
 
-- (void)settingsViewController:(IASKAppSettingsViewController *)sender buttonTappedForSpecifier:(IASKSpecifier *)specifier
+- (void)settingStaged:(NSNotification *)notification
 {
-	if ([[specifier key] isEqualToString:@"open_donation"]) {
-#ifdef SHOW_DONATION_CONTROLLER
-		DonationViewController *dvc = [[DonationViewController alloc] initWithNibName:nil bundle:nil];
-		[[sender navigationController] pushViewController:dvc animated:YES];
-#endif
+	NSString *prop = [[[notification userInfo] allKeys] firstObject];
+		
+	if ([prop isEqualToString:@"dark_icon"]) {
+		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+		
+		if ([userDefaults boolForKey:@"dark_icon"]) {
+			[[UIApplication sharedApplication] setAlternateIconName:@"BlackIcon-60" completionHandler:nil];
+		} else {
+			[[UIApplication sharedApplication] setAlternateIconName:nil completionHandler:nil];
+		}
 	}
 }
 
@@ -1014,7 +1087,7 @@
 		/* zoom out to show all tabs */
 		
 		/* make sure no text is selected */
-		[urlField resignFirstResponder];
+		[self unfocusUrlField];
 		
 		[UIView animateWithDuration:0.15 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			if (!self.toolbarOnBottom)
@@ -1083,7 +1156,7 @@
 {
 	if (!showingTabs) {
 		if ([urlField isFirstResponder]) {
-			[urlField resignFirstResponder];
+			[self unfocusUrlField];
 		}
 		
 		return;
@@ -1102,18 +1175,24 @@
 	}
 }
 
-- (void)slideToCurrentTabWithCompletionBlock:(void(^)(BOOL))block
+- (void)slideToCurrentTabWithAnimation:(WebViewTabAnimation)animation completionBlock:(void(^)(BOOL))block
 {
 	[self updateProgress];
 
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+	void (^moveBlock)(void) = ^{
 		[tabScroller setContentOffset:CGPointMake([self frameForTabIndex:curTabIndex].origin.x, 0) animated:NO];
-	} completion:block];
+	};
+	
+	if (animation == WebViewTabAnimationQuick) {
+		moveBlock();
+		block(YES);
+	} else
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:moveBlock completion:block];
 }
 
 - (IBAction)slideToCurrentTab:(id)_id
 {
-	[self slideToCurrentTabWithCompletionBlock:nil];
+	[self slideToCurrentTabWithAnimation:WebViewTabAnimationDefault completionBlock:nil];
 }
 
 - (NSString *)buildDefaultUserAgent
@@ -1180,6 +1259,34 @@
 	[[bookmarks view] removeFromSuperview];
 	[bookmarks removeFromParentViewController];
 	bookmarks = nil;
+}
+
+- (void)showSearchResultsForQuery:(NSString *)query
+{
+	if (!searchResults) {
+		searchResults = [[SearchResultsController alloc] init];
+	
+		if (self.toolbarOnBottom)
+		/* we can't size according to keyboard height because we don't know it yet, so we'll just put it full height below the toolbar and we'll update it when the keyboard shows up */
+			searchResults.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+		else
+			searchResults.view.frame = CGRectMake(0, toolbar.frame.size.height + toolbar.frame.origin.y, self.view.frame.size.width, self.view.frame.size.height);
+		
+		[self addChildViewController:searchResults];
+		[self.view insertSubview:[searchResults view] belowSubview:toolbar];
+	}
+	
+	[searchResults updateSearchResultsForQuery:query];
+}
+
+- (void)hideSearchResults
+{
+	if (!searchResults)
+		return;
+	
+	[[searchResults view] removeFromSuperview];
+	[searchResults removeFromParentViewController];
+	searchResults = nil;
 }
 
 @end

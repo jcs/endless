@@ -39,7 +39,11 @@ Commercial redistribution license exclusions are available; please
 
 - Swipe left and right to go back and forward
 
-- Search from URL bar with DDG, Google, or Startpage
+- Long-press on back button to show history and quickly go back more than one
+  page
+
+- Search from URL bar with DDG, Google, or Startpage, including optional
+  auto-complete of search queries
 
 - Optional dark/night-time interface
 
@@ -76,6 +80,8 @@ Commercial redistribution license exclusions are available; please
     the session (until the last tab accessing that data closes) but allows
     persistent storage from configured hosts
 
+  - Blocks WebRTC by default
+
 - Auto-destroys non-whitelisted cookies and local storage (even within the same
   tab) that has not been accessed by any other tab within a configurable amount
   of time (defaults to 30 minutes) to improve privacy while browsing within a
@@ -96,7 +102,7 @@ Commercial redistribution license exclusions are available; please
   for enhancing privacy and not to be an AdBlock-style comprehensive ad-blocking
   list)
 
-- Shows locked padlock for fully SSL-encrypted URLs, and organization name for
+- Shows locked padlock for fully SSL-encrypted URLs, and a green padlock for
   sites with EV SSL certs
 
 - Integrated SSL certificate viewer by tapping on padlock icon, highlighting
@@ -107,9 +113,9 @@ Commercial redistribution license exclusions are available; please
 
 - Disables 3rd party keyboards by default with option to enable
 
-- Integrated [1Password button](https://github.com/AgileBits/onepassword-app-extension)
+- Integrated [password manager button](https://github.com/AgileBits/onepassword-app-extension)
   to autofill website logins, passwords, credit card numbers, etc.; requires
-  the 1Password iOS app to be installed (and is not enabled if not installed)
+  the 1Password or Bitwarden iOS app to be installed (and is not enabled if not installed)
 
 #### Infrequently Asked Questions
 

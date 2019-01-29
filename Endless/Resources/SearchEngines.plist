@@ -5,9 +5,9 @@
 	<key>DuckDuckGo</key>
 	<dict>
 		<key>search_url</key>
-		<string>https://duckduckgo.com/?q=%@</string>
+		<string>https://start.duckduckgo.com/?q=%@</string>
 		<key>homepage_url</key>
-		<string>https://duckduckgo.com/</string>
+		<string>https://start.duckduckgo.com/</string>
 		<key>autocomplete_url</key>
 		<string>https://ac.duckduckgo.com/ac/?type=list&amp;q=%@</string>
 	</dict>
@@ -27,7 +27,7 @@
 		<key>homepage_url</key>
 		<string>https://startpage.com/</string>
 		<key>autocomplete_url</key>
-		<string>https://startpage.com/do/suggest?query=%@&amp;format=plain</string>
+		<string>https://startpage.com/do/suggest?format=plain</string>
 		<key>post_params</key>
 		<dict>
 			<key>query</key>
