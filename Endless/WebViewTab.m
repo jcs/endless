@@ -64,8 +64,10 @@
 	[_webView.scrollView setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
 	[_webView.scrollView setScrollIndicatorInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
 	[_webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
-	[_webView.scrollView setContentInsetAdjustmentBehavior:UIScrollViewContentInsetAdjustmentNever];
-	
+    if (@available(iOS 11.0, *)) {
+        [_webView.scrollView setContentInsetAdjustmentBehavior:UIScrollViewContentInsetAdjustmentNever];
+    }
+
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(webKitprogressEstimateChanged:) name:@"WebProgressEstimateChangedNotification" object:[_webView valueForKeyPath:@"documentView.webView"]];
 	
 	/* swiping goes back and forward in current webview */

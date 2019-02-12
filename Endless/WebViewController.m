@@ -374,17 +374,17 @@
 	
 	/* keep tabScroller the size of the root frame minus the toolbar */
 	if (self.toolbarOnBottom) {
-		toolbar.frame = tabToolbar.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - keyboardHeight - (keyboardHeight ? 0 : self.view.safeAreaInsets.bottom), self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, TOOLBAR_HEIGHT + keyboardHeight);
+		toolbar.frame = tabToolbar.frame = CGRectMake(self.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - keyboardHeight - (keyboardHeight ? 0 : self.safeAreaInsets.bottom), self.view.bounds.size.width - self.safeAreaInsets.left - self.safeAreaInsets.right, TOOLBAR_HEIGHT + keyboardHeight);
 
 		progressBar.frame = CGRectMake(0, 0, toolbar.bounds.size.width, 2);
 		tabToolbarHairline.frame = CGRectMake(0, 0, toolbar.bounds.size.width, 1);
 
-		tabScroller.frame = CGRectMake(self.view.safeAreaInsets.left, 0, self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, self.view.bounds.size.height - TOOLBAR_HEIGHT - self.view.safeAreaInsets.bottom);
+		tabScroller.frame = CGRectMake(self.safeAreaInsets.left, 0, self.view.bounds.size.width - self.safeAreaInsets.left - self.safeAreaInsets.right, self.view.bounds.size.height - TOOLBAR_HEIGHT - self.safeAreaInsets.bottom);
 
-		tabChooser.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - 20 - self.view.safeAreaInsets.bottom, self.view.frame.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, 20);
+		tabChooser.frame = CGRectMake(self.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - 20 - self.safeAreaInsets.bottom, self.view.frame.size.width - self.safeAreaInsets.left - self.safeAreaInsets.right, 20);
 	}
 	else {
-		toolbar.frame = tabToolbar.frame = CGRectMake(0, self.view.safeAreaInsets.left, self.view.bounds.size.width - self.view.safeAreaInsets.left + self.view.safeAreaInsets.right, TOOLBAR_HEIGHT);
+		toolbar.frame = tabToolbar.frame = CGRectMake(0, self.safeAreaInsets.left, self.view.bounds.size.width - self.safeAreaInsets.left + self.safeAreaInsets.right, TOOLBAR_HEIGHT);
 		progressBar.frame = CGRectMake(0, TOOLBAR_HEIGHT - 2, toolbar.frame.size.width, 2);
 		tabToolbarHairline.frame = CGRectMake(0, TOOLBAR_HEIGHT - 0.5, toolbar.frame.size.width, 0.5);
 
@@ -472,7 +472,7 @@
 	
 	if (bookmarks) {
 		if (self.toolbarOnBottom)
-			bookmarks.view.frame = CGRectMake(0, 0, self.view.bounds.size.width - self.view.safeAreaInsets.right, toolbar.frame.origin.y);
+			bookmarks.view.frame = CGRectMake(0, 0, self.view.bounds.size.width - self.safeAreaInsets.right, toolbar.frame.origin.y);
 		else
 			bookmarks.view.frame = CGRectMake(0, toolbar.frame.origin.y + toolbar.bounds.size.height, self.view.bounds.size.width, self.view.bounds.size.height);
 	}
@@ -482,7 +482,7 @@
 
 - (CGRect)frameForTabIndex:(NSUInteger)number
 {
-	return CGRectMake((self.view.frame.size.width * number), 0, self.view.frame.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, tabScroller.frame.size.height);
+	return CGRectMake((self.view.frame.size.width * number), 0, self.view.frame.size.width - self.safeAreaInsets.left - self.safeAreaInsets.right, tabScroller.frame.size.height);
 }
 
 - (CGRect)frameForUrlField
@@ -1287,6 +1287,19 @@
 	[[searchResults view] removeFromSuperview];
 	[searchResults removeFromParentViewController];
 	searchResults = nil;
+}
+
+/**
+ Encapsulate iOS version check and fetch of `self.view.safeAreaInsets`.
+ Returns a 0 insets struct on fallback.
+ */
+- (UIEdgeInsets)safeAreaInsets
+{
+    if (@available(iOS 11.0, *)) {
+        return self.view.safeAreaInsets;
+    }
+
+    return UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
 @end
