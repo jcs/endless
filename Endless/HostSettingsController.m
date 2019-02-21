@@ -123,8 +123,8 @@
 	[alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
 		textField.placeholder = @"example.com";
 		
-		if (firstMatch != nil)
-			textField.text = firstMatch;
+        if (self->firstMatch != nil)
+            textField.text = self->firstMatch;
 	}];
 	
 	UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -133,7 +133,7 @@
 			HostSettings *hs = [[HostSettings alloc] initForHost:[host text] withDict:nil];
 			[hs save];
 			[HostSettings persist];
-			_sortedHosts = nil;
+            self->_sortedHosts = nil;
 			
 			[self.tableView reloadData];
 			[self showDetailsForHost:[host text]];
