@@ -110,18 +110,32 @@
 	NSURL *url = (__bridge_transfer NSURL *)(CFHTTPMessageCopyRequestURL([self HTTPRequest]));
 	if ([[[url scheme] lowercaseString] isEqualToString:@"https"]) {
 		hs = [HostSettings settingsOrDefaultsForHost:[url host]];
+
+        CFMutableDictionaryRef sslOptions = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+
+        BOOL setOptions = NO;
+
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"allow_tls_error_ignore"]
+            && [hs boolSettingOrDefault:HOST_SETTINGS_KEY_IGNORE_TLS_ERRORS])
+        {
+            CFDictionarySetValue(sslOptions, kCFStreamSSLValidatesCertificateChain, kCFBooleanFalse);
+            setOptions = YES;
+        }
 		
 		if ([[hs settingOrDefault:HOST_SETTINGS_KEY_TLS] isEqualToString:HOST_SETTINGS_TLS_12]) {
 			/* kTLSProtocol12 allows lower protocols, so use kCFStreamSSLLevel to force 1.2 */
 			
-			CFMutableDictionaryRef sslOptions = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 			CFDictionarySetValue(sslOptions, kCFStreamSSLLevel, CFSTR("kCFStreamSocketSecurityLevelTLSv1_2"));
-			CFReadStreamSetProperty((__bridge CFReadStreamRef)_HTTPStream, kCFStreamPropertySSLSettings, sslOptions);
-			
+            setOptions = YES;
+
 #ifdef TRACE_HOST_SETTINGS
 			NSLog(@"[HostSettings] set TLS/SSL min level for %@ to TLS 1.2", [url host]);
 #endif
 		}
+
+        if (setOptions) {
+            CFReadStreamSetProperty((__bridge CFReadStreamRef)_HTTPStream, kCFStreamPropertySSLSettings, sslOptions);
+        }
 	}
 	
 	[_HTTPStream setDelegate:(id<NSStreamDelegate>)self];
