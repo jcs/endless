@@ -291,6 +291,7 @@
 				BDB4B310DC7AA8852D5D0A10 /* Pods */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		01801E931A32CA2A002B4718 /* Products */ = {
 			isa = PBXGroup;
