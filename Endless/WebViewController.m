@@ -369,12 +369,12 @@
 		return;
 	
 	/* keep the root view the size of the window minus the statusbar */
-	self.view.frame = CGRectMake(0, statusBarHeight, [appDelegate window].bounds.size.width, [appDelegate window].bounds.size.height - statusBarHeight);
+	self.view.frame = CGRectMake(0, statusBarHeight, [appDelegate window].bounds.size.width, [appDelegate window].bounds.size.height - statusBarHeight - keyboardHeight);
 	wrapper.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
 	
 	/* keep tabScroller the size of the root frame minus the toolbar */
 	if (self.toolbarOnBottom) {
-		toolbar.frame = tabToolbar.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - keyboardHeight - (keyboardHeight ? 0 : self.view.safeAreaInsets.bottom), self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, TOOLBAR_HEIGHT + keyboardHeight);
+		toolbar.frame = tabToolbar.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - (keyboardHeight ? 0 : self.view.safeAreaInsets.bottom), self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, TOOLBAR_HEIGHT);
 
 		progressBar.frame = CGRectMake(0, 0, toolbar.bounds.size.width, 2);
 		tabToolbarHairline.frame = CGRectMake(0, 0, toolbar.bounds.size.width, 1);
