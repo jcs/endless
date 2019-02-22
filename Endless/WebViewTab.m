@@ -544,13 +544,13 @@
 	if ([[error domain] isEqualToString:NSOSStatusErrorDomain]) {
 		switch (error.code) {
 		case errSSLProtocol: /* -9800 */
-			msg = @"SSL protocol error";
+			msg = NSLocalizedString(@"TLS protocol error", nil);
 			break;
 		case errSSLNegotiation: /* -9801 */
-			msg = @"SSL handshake failed";
+			msg = NSLocalizedString(@"TLS handshake failed", nil);
 			break;
 		case errSSLXCertChainInvalid: /* -9807 */
-			msg = @"SSL certificate chain verification error (self-signed certificate?)";
+			msg = NSLocalizedString(@"TLS certificate chain verification error (self-signed certificate?)", nil);
 			break;
 		}
 	}
@@ -576,6 +576,38 @@
 
 	UIAlertController *uiac = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", nil) message:msg preferredStyle:UIAlertControllerStyleAlert];
 	[uiac addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:nil]];
+
+	if (u != nil && [[NSUserDefaults standardUserDefaults] boolForKey:@"allow_tls_error_ignore"]) {
+		[uiac addAction:[UIAlertAction
+						 actionWithTitle:NSLocalizedString(@"Ignore for this host", nil)
+						 style:UIAlertActionStyleDestructive
+						 handler:^(UIAlertAction * _Nonnull action) {
+
+			// self.url will hold the URL of the UIWebView which is the last
+			// *successful* request.
+			// We need the URL of the *failed* request, which should be in `u`.
+			// (From `error`'s `userInfo` dictionary.
+			NSURL *url = [[NSURL alloc] initWithString:u];
+
+			// Theoretically, URL string could have been malformed.
+			if (url != nil) {
+				HostSettings *hs = [HostSettings forHost:url.host];
+
+				if (hs == nil) {
+					hs = [[HostSettings alloc] initForHost:url.host withDict:nil];
+				}
+
+				[hs setSetting:HOST_SETTINGS_KEY_IGNORE_TLS_ERRORS toValue:HOST_SETTINGS_VALUE_YES];
+
+				[hs save];
+				[HostSettings persist];
+
+				// Retry the failed request.
+				[self loadURL:url];
+			}
+		}]];
+	}
+
 	[[appDelegate webViewController] presentViewController:uiac animated:YES completion:nil];
 	
 	[self webViewDidFinishLoad:__webView];

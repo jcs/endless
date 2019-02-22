@@ -172,6 +172,24 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Security</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>This allows you to ignore TLS errors for specific sites, which may be needed for testing self-signed sites. DANGER: This may expose you to man-in-the-middle attacks! Don&apos;t use this, if you don&apos;t know, what that is!</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>allow_tls_error_ignore</string>
+			<key>Title</key>
+			<string>Allow selective ignore of TLS errors</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Miscellaneous</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
