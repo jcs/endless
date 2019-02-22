@@ -1,4 +1,4 @@
-platform :ios, "11.1"
+platform :ios, "12.0"
 
 target "Endless" do
   pod "InAppSettingsKit"
