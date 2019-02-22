@@ -197,8 +197,8 @@
 	if (!_keyCommands) {
 		_keyCommands = [[NSMutableArray alloc] init];
 		
-		[_keyCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:UIKeyModifierCommand action:@selector(handleKeyboardShortcut:) discoverabilityTitle:NSLocalizedString(@"Go Back", nil)]];
-		[_keyCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:UIKeyModifierCommand action:@selector(handleKeyboardShortcut:) discoverabilityTitle:NSLocalizedString(@"Go Forward", nil)]];
+		[_keyCommands addObject:[UIKeyCommand keyCommandWithInput:@"[" modifierFlags:UIKeyModifierCommand action:@selector(handleKeyboardShortcut:) discoverabilityTitle:NSLocalizedString(@"Go Back", nil)]];
+		[_keyCommands addObject:[UIKeyCommand keyCommandWithInput:@"]" modifierFlags:UIKeyModifierCommand action:@selector(handleKeyboardShortcut:) discoverabilityTitle:NSLocalizedString(@"Go Forward", nil)]];
 
 		[_keyCommands addObject:[UIKeyCommand keyCommandWithInput:@"b" modifierFlags:UIKeyModifierCommand action:@selector(handleKeyboardShortcut:) discoverabilityTitle:NSLocalizedString(@"Show Bookmarks", nil)]];
 
@@ -285,12 +285,12 @@
 			return;
 		}
 		
-		if ([[keyCommand input] isEqualToString:UIKeyInputLeftArrow]) {
+		if ([[keyCommand input] isEqualToString:@"["]) {
 			[[[self webViewController] curWebViewTab] goBack];
 			return;
 		}
 		
-		if ([[keyCommand input] isEqualToString:UIKeyInputRightArrow]) {
+		if ([[keyCommand input] isEqualToString:@"]"]) {
 			[[[self webViewController] curWebViewTab] goForward];
 			return;
 		}
