@@ -158,13 +158,13 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"WebProgressEstimateChangedNotification" object:[_webView valueForKeyPath:@"documentView.webView"]];
 	
 	void (^block)(void) = ^{
-		[_webView setDelegate:nil];
-		[_webView stopLoading];
+        [self->_webView setDelegate:nil];
+        [self->_webView stopLoading];
 		
-		for (id gr in [_webView gestureRecognizers])
-			[_webView removeGestureRecognizer:gr];
+        for (id gr in [self->_webView gestureRecognizers])
+            [self->_webView removeGestureRecognizer:gr];
 		
-		_webView = nil;
+        self->_webView = nil;
 		
 		[[self viewHolder] removeFromSuperview];
 	};
@@ -427,7 +427,7 @@
 		UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Confirm", nil) message:NSLocalizedString(@"Allow this page to close its tab?", nil) preferredStyle:UIAlertControllerStyleAlert];
 		
 		UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-			[[appDelegate webViewController] removeTab:[self tabIndex]];
+            [[self->appDelegate webViewController] removeTab:[self tabIndex]];
 		}];
 		
 		UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel action") style:UIAlertActionStyleCancel handler:nil];
@@ -720,7 +720,7 @@
 	}];
 	
 	UIAlertAction *openNewTabAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Open in a New Tab", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-		WebViewTab *newtab = [[appDelegate webViewController] addNewTabForURL:[NSURL URLWithString:href]];
+		WebViewTab *newtab = [[self->appDelegate webViewController] addNewTabForURL:[NSURL URLWithString:href]];
 		newtab.openedByTabHash = [NSNumber numberWithLong:self.hash];
 	}];
 	
@@ -739,7 +739,7 @@
 		else {
 			UIAlertController *uiac = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", nil) message:[NSString stringWithFormat:NSLocalizedString(@"An error occurred downloading image %@", nil), img] preferredStyle:UIAlertControllerStyleAlert];
 			[uiac addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:nil]];
-			[[appDelegate webViewController] presentViewController:uiac animated:YES completion:nil];
+            [[self->appDelegate webViewController] presentViewController:uiac animated:YES completion:nil];
 		}
 	}];
 	
