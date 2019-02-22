@@ -232,6 +232,11 @@
 		5BC57F74FB0E2BC3CDAB5D1D /* Pods-Endless Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Endless Tests/Pods-Endless Tests.release.xcconfig"; sourceTree = "<group>"; };
 		7AD1EFF778D745256E109B84 /* Pods-Endless.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless.release.xcconfig"; path = "Pods/Target Support Files/Pods-Endless/Pods-Endless.release.xcconfig"; sourceTree = "<group>"; };
 		9E6A896A76F4F163B49219DB /* Pods-Endless.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Endless/Pods-Endless.debug.xcconfig"; sourceTree = "<group>"; };
+		A018C86C221EDA7300D5B3D7 /* PRIVACY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PRIVACY.md; sourceTree = "<group>"; };
+		A018C86D221EDA7300D5B3D7 /* Gemfile.lock */ = {isa = PBXFileReference; lastKnownFileType = text; path = Gemfile.lock; sourceTree = "<group>"; };
+		A018C86E221EDA7300D5B3D7 /* Podfile.lock */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile.lock; sourceTree = "<group>"; };
+		A018C86F221EDA7300D5B3D7 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		A018C870221EDA7300D5B3D7 /* Gemfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Gemfile; sourceTree = "<group>"; };
 		A024D5AB1ECEF10F00B28CC5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Endless/Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A024D5AD1ECEF10F00B28CC5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Endless/Base.lproj/OnePasswordExtension.strings; sourceTree = "<group>"; };
 		A024D5B01ECEF11A00B28CC5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Endless/de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -274,6 +279,7 @@
 		01801E891A32CA2A002B4718 = {
 			isa = PBXGroup;
 			children = (
+				A018C86B221EDA5100D5B3D7 /* Build */,
 				01801E941A32CA2A002B4718 /* Endless */,
 				01801EC11A3360B1002B4718 /* Resources */,
 				01AFEB4A1B4F2A5F00A02482 /* External */,
@@ -473,6 +479,18 @@
 				FC10255E5E506A0C25D6276B /* libPods-Endless Tests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A018C86B221EDA5100D5B3D7 /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				A018C870221EDA7300D5B3D7 /* Gemfile */,
+				A018C86D221EDA7300D5B3D7 /* Gemfile.lock */,
+				A018C86F221EDA7300D5B3D7 /* Podfile */,
+				A018C86E221EDA7300D5B3D7 /* Podfile.lock */,
+				A018C86C221EDA7300D5B3D7 /* PRIVACY.md */,
+			);
+			name = Build;
 			sourceTree = "<group>";
 		};
 		BDB4B310DC7AA8852D5D0A10 /* Pods */ = {
@@ -678,7 +696,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Endless/Pods-Endless-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Endless/Pods-Endless-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/InAppSettingsKit/InAppSettingsKit.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/TUSafariActivity/TUSafariActivity.bundle",
 				"${PODS_ROOT}/XLForm/XLForm/XLForm.bundle",
@@ -691,7 +709,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Endless/Pods-Endless-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Endless/Pods-Endless-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		84FB07CB399E07E998723292 /* [CP] Check Pods Manifest.lock */ = {
