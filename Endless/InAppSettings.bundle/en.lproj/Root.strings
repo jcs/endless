@@ -20,3 +20,6 @@
 "Rate on App Store" = "Rate on App Store";
 "About" = "About";
 "About Endless" = "About Endless";
+"Security" = "Security";
+"This allows you to ignore TLS errors for specific sites, which may be needed for testing self-signed sites. DANGER: This may expose you to man-in-the-middle attacks! Don't use this, if you don't know, what that is!" = "This allows you to ignore TLS errors for specific sites, which may be needed for testing self-signed sites. DANGER: This may expose you to man-in-the-middle attacks! Don't use this, if you don't know, what that is!";
+"Allow selective ignore of TLS errors" = "Allow selective ignore of TLS errors";
