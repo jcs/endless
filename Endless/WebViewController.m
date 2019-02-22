@@ -369,7 +369,7 @@
 		return;
 	
 	/* keep the root view the size of the window minus the statusbar */
-	self.view.frame = CGRectMake(0, statusBarHeight, [appDelegate window].bounds.size.width, [appDelegate window].bounds.size.height - statusBarHeight);
+	self.view.frame = CGRectMake(0, statusBarHeight, [appDelegate window].bounds.size.width, [appDelegate window].bounds.size.height - statusBarHeight - keyboardHeight);
 	wrapper.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
 	
 	/* keep tabScroller the size of the root frame minus the toolbar */
