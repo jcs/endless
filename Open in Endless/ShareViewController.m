@@ -32,7 +32,7 @@
 	for (NSItemProvider *itemProvider in item.attachments) {
 		if ([itemProvider hasItemConformingToTypeIdentifier:(NSString *)kUTTypeURL]) {
 			[itemProvider loadItemForTypeIdentifier:(NSString *)kUTTypeURL options:@{} completionHandler:^(id<NSSecureCoding> _Nullable item, NSError * _Null_unspecified error) {
-				url = (NSURL *)item;
+				self->url = (NSURL *)item;
 			}];
 		}
 	}
