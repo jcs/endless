@@ -37,6 +37,7 @@
 	UILabel *tabCount;
 	int keyboardHeight;
 	BOOL keyboardShowing;
+	float safeAreaBottom;
 	
 	UIButton *backButton;
 	UILongPressGestureRecognizer *historyRecognizer;
@@ -86,6 +87,7 @@
 	self.darkInterface = [userDefaults boolForKey:@"dark_interface"];
 
 	keyboardHeight = 0;
+	safeAreaBottom = 0;
 	
 	tabToolbarHairline = [[UIView alloc] init];
 	[toolbar addSubview:tabToolbarHairline];
@@ -360,9 +362,18 @@
 	}];
 }
 
+- (void)viewSafeAreaInsetsDidChange
+{
+	[super viewSafeAreaInsetsDidChange];
+	
+	if (self.view.safeAreaInsets.bottom != 0)
+		safeAreaBottom = self.view.safeAreaInsets.bottom;
+}
+
 - (void)viewDidLayoutSubviews
 {
-	float statusBarHeight = [[UIApplication sharedApplication] statusBarFrame].size.height;
+	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	float statusBarHeight = (UIInterfaceOrientationIsLandscape(orientation) ? 0 : [[UIApplication sharedApplication] statusBarFrame].size.height);
 
 	/* views are transforming and we may calculate things incorrectly here, so just ignore this request */
 	if (showingTabs)
@@ -374,23 +385,23 @@
 	
 	/* keep tabScroller the size of the root frame minus the toolbar */
 	if (self.toolbarOnBottom) {
-		toolbar.frame = tabToolbar.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - (keyboardHeight ? 0 : self.view.safeAreaInsets.bottom), self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, TOOLBAR_HEIGHT);
+		toolbar.frame = tabToolbar.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - (keyboardHeight ? 0 : safeAreaBottom), self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, TOOLBAR_HEIGHT);
 
 		progressBar.frame = CGRectMake(0, 0, toolbar.bounds.size.width, 2);
 		tabToolbarHairline.frame = CGRectMake(0, 0, toolbar.bounds.size.width, 1);
 
-		tabScroller.frame = CGRectMake(self.view.safeAreaInsets.left, 0, self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, self.view.bounds.size.height - TOOLBAR_HEIGHT - self.view.safeAreaInsets.bottom);
+		tabScroller.frame = CGRectMake(self.view.safeAreaInsets.left, 0, self.view.bounds.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, self.view.bounds.size.height - TOOLBAR_HEIGHT - (keyboardHeight ? 0 : safeAreaBottom));
 
-		tabChooser.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - 20 - self.view.safeAreaInsets.bottom, self.view.frame.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, 20);
+		tabChooser.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.bounds.size.height - TOOLBAR_HEIGHT - 20 - (keyboardHeight ? 0 : safeAreaBottom), self.view.frame.size.width - self.view.safeAreaInsets.left - self.view.safeAreaInsets.right, 20);
 	}
 	else {
-		toolbar.frame = tabToolbar.frame = CGRectMake(0, self.view.safeAreaInsets.left, self.view.bounds.size.width - self.view.safeAreaInsets.left + self.view.safeAreaInsets.right, TOOLBAR_HEIGHT);
+		toolbar.frame = tabToolbar.frame = CGRectMake(0, 0, self.view.bounds.size.width - self.view.safeAreaInsets.left + self.view.safeAreaInsets.right, TOOLBAR_HEIGHT);
 		progressBar.frame = CGRectMake(0, TOOLBAR_HEIGHT - 2, toolbar.frame.size.width, 2);
 		tabToolbarHairline.frame = CGRectMake(0, TOOLBAR_HEIGHT - 0.5, toolbar.frame.size.width, 0.5);
 
 		tabScroller.frame = CGRectMake(0, TOOLBAR_HEIGHT, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
 
-		tabChooser.frame = CGRectMake(0, self.view.bounds.size.height - 20 - 20, tabScroller.bounds.size.width, 20);
+		tabChooser.frame = CGRectMake(0, self.view.bounds.size.height - 20 - (keyboardHeight ? 0 : safeAreaBottom), tabScroller.bounds.size.width, 20);
 	}
 
 	if (self.darkInterface) {
