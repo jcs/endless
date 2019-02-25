@@ -902,17 +902,18 @@
 
 - (void)textFieldDidChange:(UITextField *)textField
 {
+	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+
 	if (textField != urlField)
 		return;
 
 	/* if it looks like we're typing a url, stop searching */
-	if ([urlField text] == nil || [[urlField text] isEqualToString:@""] || [[urlField text] hasPrefix:@"http:"] || [[urlField text] hasPrefix:@"https:"] || [[urlField text] containsString:@"."]) {
+	if ([urlField text] == nil || [[urlField text] isEqualToString:@""] || [[urlField text] hasPrefix:@"http:"] || [[urlField text] hasPrefix:@"https:"] || ([[urlField text] containsString:@"."] && [userDefaults boolForKey:@"search_engine_stop_dot"])) {
 		[self hideSearchResults];
 		[self showBookmarksForEditing:NO];
 		return;
 	}
 	
-	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	if (![userDefaults boolForKey:@"search_engine_live"])
 		return;
 	
