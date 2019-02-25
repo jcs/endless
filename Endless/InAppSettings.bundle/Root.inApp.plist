@@ -44,6 +44,16 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Mute audio with mute switch</string>
+			<key>Key</key>
+			<string>mute_with_switch</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Custom home page</string>
 			<key>Key</key>
 			<string>homepage</string>

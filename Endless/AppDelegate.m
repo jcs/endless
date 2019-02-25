@@ -57,9 +57,7 @@
 	self.window.rootViewController = [[WebViewController alloc] init];
 	self.window.rootViewController.restorationIdentifier = @"WebViewController";
 	
-	/* setting AVAudioSessionCategoryAmbient will prevent audio from UIWebView from pausing already-playing audio from other apps */
-	[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
-	[[AVAudioSession sharedInstance] setActive:NO error:nil];
+	[self adjustMuteSwitchBehavior];
 	
 	return YES;
 }
@@ -386,6 +384,19 @@
 		[[self cookieJar] clearAllNonWhitelistedData];
 	} else {
 		NSLog(@"[AppDelegate] need to handle action %@", [shortcutItem type]);
+	}
+}
+
+- (void)adjustMuteSwitchBehavior
+{
+	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+
+	if ([userDefaults boolForKey:@"mute_with_switch"]) {
+		/* setting AVAudioSessionCategoryAmbient will prevent audio from UIWebView from pausing already-playing audio from other apps */
+		[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+		[[AVAudioSession sharedInstance] setActive:NO error:nil];
+	} else {
+		[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
 	}
 }
 

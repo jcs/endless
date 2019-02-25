@@ -1073,6 +1073,8 @@
 		} else {
 			[[UIApplication sharedApplication] setAlternateIconName:nil completionHandler:nil];
 		}
+	} else if ([prop isEqualToString:@"mute_with_switch"]) {
+		[appDelegate adjustMuteSwitchBehavior];
 	}
 }
 

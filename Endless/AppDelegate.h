@@ -32,6 +32,7 @@
 @property (strong, atomic) NSURL *urlToOpenAtLaunch;
 
 - (BOOL)areTesting;
+- (void)adjustMuteSwitchBehavior;
 
 @end
 
