@@ -524,6 +524,8 @@
 
 - (void)webView:(UIWebView *)__webView didFailLoadWithError:(NSError *)error
 {
+	BOOL isTLSError = false;
+	
 	self.url = __webView.request.URL;
 	[self setProgress:@0];
 	
@@ -545,12 +547,15 @@
 		switch (error.code) {
 		case errSSLProtocol: /* -9800 */
 			msg = NSLocalizedString(@"TLS protocol error", nil);
+			isTLSError = true;
 			break;
 		case errSSLNegotiation: /* -9801 */
 			msg = NSLocalizedString(@"TLS handshake failed", nil);
+			isTLSError = true;
 			break;
 		case errSSLXCertChainInvalid: /* -9807 */
 			msg = NSLocalizedString(@"TLS certificate chain verification error (self-signed certificate?)", nil);
+			isTLSError = true;
 			break;
 		}
 	}
@@ -577,19 +582,18 @@
 	UIAlertController *uiac = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", nil) message:msg preferredStyle:UIAlertControllerStyleAlert];
 	[uiac addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:nil]];
 
-	if (u != nil && [[NSUserDefaults standardUserDefaults] boolForKey:@"allow_tls_error_ignore"]) {
+	if (u != nil && isTLSError && [[NSUserDefaults standardUserDefaults] boolForKey:@"allow_tls_error_ignore"]) {
 		[uiac addAction:[UIAlertAction
 						 actionWithTitle:NSLocalizedString(@"Ignore for this host", nil)
 						 style:UIAlertActionStyleDestructive
 						 handler:^(UIAlertAction * _Nonnull action) {
 
-			// self.url will hold the URL of the UIWebView which is the last
-			// *successful* request.
-			// We need the URL of the *failed* request, which should be in `u`.
-			// (From `error`'s `userInfo` dictionary.
+			/*
+			 * self.url will hold the URL of the UIWebView which is the last *successful* request.
+			 * We need the URL of the *failed* request, which should be in `u`.
+			 * (From `error`'s `userInfo` dictionary.
+			 */
 			NSURL *url = [[NSURL alloc] initWithString:u];
-
-			// Theoretically, URL string could have been malformed.
 			if (url != nil) {
 				HostSettings *hs = [HostSettings forHost:url.host];
 
