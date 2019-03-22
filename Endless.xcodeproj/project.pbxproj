@@ -241,6 +241,7 @@
 		A024D5AD1ECEF10F00B28CC5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Endless/Base.lproj/OnePasswordExtension.strings; sourceTree = "<group>"; };
 		A024D5B01ECEF11A00B28CC5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Endless/de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A024D5B11ECEF11A00B28CC5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Endless/de.lproj/OnePasswordExtension.strings; sourceTree = "<group>"; };
+		A07E147222381A8700B76F77 /* SilenceDeprecation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SilenceDeprecation.h; sourceTree = "<group>"; };
 		FC10255E5E506A0C25D6276B /* libPods-Endless Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Endless Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDEC322B35C8D861612E24E3 /* Pods-Endless Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Endless Tests/Pods-Endless Tests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -372,6 +373,7 @@
 				013E71CF1E5150C000BB0572 /* urlblocker.json */,
 				015748031E208C5000DB2044 /* UIResponder+FirstResponder.h */,
 				015748041E208C5000DB2044 /* UIResponder+FirstResponder.m */,
+				A07E147222381A8700B76F77 /* SilenceDeprecation.h */,
 			);
 			name = "Supporting Files";
 			path = Endless;

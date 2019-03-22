@@ -50,7 +50,7 @@
 	/* re-register user agent with our hash, which should only affect this UIWebView */
 	[[NSUserDefaults standardUserDefaults] registerDefaults:@{ @"UserAgent": [NSString stringWithFormat:@"%@/%lu", [appDelegate defaultUserAgent], (unsigned long)self.hash] }];
 	
-	_webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+	SILENCE_DEPRECATION(_webView = [[UIWebView alloc] initWithFrame:CGRectZero]);
 	_needsRefresh = FALSE;
 	if (rid != nil) {
 		[_webView setRestorationIdentifier:rid];
@@ -324,8 +324,11 @@
 }
 
 /* this will only fire for top-level requests (and iframes), not page elements */
+SILENCE_DEPRECATION_ON
 - (BOOL)webView:(UIWebView *)__webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
+SILENCE_DEPRECATION_OFF
+
 	NSURL *url = [request URL];
 	
 	/* treat endlesshttps?:// links clicked inside of web pages as normal links */
@@ -475,8 +478,11 @@
 	return NO;
 }
 
+SILENCE_DEPRECATION_ON
 - (void)webViewDidStartLoad:(UIWebView *)__webView
 {
+SILENCE_DEPRECATION_OFF
+
 	/* reset and then let WebViewController animate to our actual progress */
 	[self setProgress:@0.0];
 	[self setProgress:@0.1];
@@ -485,8 +491,10 @@
 		self.url = [[__webView request] URL];
 }
 
+SILENCE_DEPRECATION_ON
 - (void)webViewDidFinishLoad:(UIWebView *)__webView
 {
+SILENCE_DEPRECATION_OFF
 #ifdef TRACE
 	NSLog(@"[Tab %@] finished loading page/iframe %@, security level is %lu", self.tabIndex, [[[__webView request] URL] absoluteString], self.secureMode);
 #endif
@@ -522,8 +530,11 @@
 	skipHistory = NO;
 }
 
+SILENCE_DEPRECATION_ON
 - (void)webView:(UIWebView *)__webView didFailLoadWithError:(NSError *)error
 {
+SILENCE_DEPRECATION_OFF
+
 	BOOL isTLSError = false;
 	
 	self.url = __webView.request.URL;
@@ -570,7 +581,9 @@
 #ifdef TRACE
 			NSLog(@"[Tab %@] not showing dialog for non-origin error: %@ (%@)", self.tabIndex, msg, error);
 #endif
+SILENCE_DEPRECATION_ON
 			[self webViewDidFinishLoad:__webView];
+SILENCE_DEPRECATION_OFF
 			return;
 		}
 	}
@@ -613,12 +626,17 @@
 	}
 
 	[[appDelegate webViewController] presentViewController:uiac animated:YES completion:nil];
-	
+
+SILENCE_DEPRECATION_ON
 	[self webViewDidFinishLoad:__webView];
+SILENCE_DEPRECATION_OFF
 }
 
+SILENCE_DEPRECATION_ON
 - (void)webView:(UIWebView *)__webView callbackWith:(NSString *)callback
 {
+SILENCE_DEPRECATION_OFF
+	
 	NSString *finalcb = [NSString stringWithFormat:@"(function() { %@; __endless.ipcDone = (new Date()).getTime(); })();", callback];
 
 #ifdef TRACE_IPC
