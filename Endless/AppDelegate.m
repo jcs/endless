@@ -122,9 +122,22 @@
 	else if ([[[url scheme] lowercaseString] isEqualToString:@"endlesshttps"])
 		url = [NSURL URLWithString:[[url absoluteString] stringByReplacingCharactersInRange:NSMakeRange(0, [@"endlesshttps" length]) withString:@"https"]];
 
-	[[self webViewController] dismissViewControllerAnimated:YES completion:nil];
-	[[self webViewController] addNewTabForURL:url];
-	
+    // In case, a modal view controller is overlaying the WebViewController,
+    // we need to close it *before* adding a new tab. Otherwise, the UI will
+    // be broken on iPhone-X-type devices: The address field will be in the
+    // notch area.
+    if ([self webViewController].presentedViewController != nil)
+    {
+        [[self webViewController] dismissViewControllerAnimated:YES completion:^{
+            [[self webViewController] addNewTabForURL:url];
+        }];
+    }
+    // If there's no modal view controller, however, the completion block would
+    // never be called.
+    else {
+        [[self webViewController] addNewTabForURL:url];
+    }
+
 	return YES;
 }
 
