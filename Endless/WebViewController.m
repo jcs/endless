@@ -615,8 +615,10 @@
 
 - (void)addNewTabFromToolbar:(id)_id
 {
+	UITextField *urlField = self->urlField;
+
 	[self addNewTabForURL:nil forRestoration:NO withAnimation:WebViewTabAnimationDefault withCompletionBlock:^(BOOL finished) {
-		[self->urlField becomeFirstResponder];
+		[urlField becomeFirstResponder];
 	}];
 }
 
@@ -714,8 +716,11 @@
 			else {
 				/* no tabs left, add one and zoom out */
 				[self reindexTabs];
+
+				UITextField *urlField = self->urlField;
+
 				[self addNewTabForURL:nil forRestoration:false withAnimation:WebViewTabAnimationDefault withCompletionBlock:^(BOOL finished) {
-					[self->urlField becomeFirstResponder];
+					[urlField becomeFirstResponder];
 				}];
 				return;
 			}
