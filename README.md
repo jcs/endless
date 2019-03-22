@@ -3,11 +3,6 @@
 An open-source MobileSafari-like web browser for iOS ([wrapping around
 UIWebView](#infrequently-asked-questions)) with a design goal of increased security and privacy.
 
-Current builds are available for free in the
-[App Store](https://itunes.apple.com/us/app/endless-browser/id974745755?mt=8)
-and include (completely optional) in-app purchases to contribute to the funding
-of continued development.
-
 While this software is open source and you are free to modify it and use
 it on your own devices, redistribution of this software in binary
 form, with or without modification, is not permitted.
