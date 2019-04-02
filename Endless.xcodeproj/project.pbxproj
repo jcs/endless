@@ -604,7 +604,7 @@
 			};
 			buildConfigurationList = 01801E8D1A32CA2A002B4718 /* Build configuration list for PBXProject "Endless" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
