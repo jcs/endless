@@ -80,6 +80,7 @@
 		01FE82961FC0DC94006E5777 /* BlackIcon-83.5@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 01FE82951FC0DC94006E5777 /* BlackIcon-83.5@2x.png */; };
 		A024D5AE1ECEF10F00B28CC5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A024D5AA1ECEF10F00B28CC5 /* Localizable.strings */; };
 		A024D5AF1ECEF10F00B28CC5 /* OnePasswordExtension.strings in Resources */ = {isa = PBXBuildFile; fileRef = A024D5AC1ECEF10F00B28CC5 /* OnePasswordExtension.strings */; };
+		A09A2AA52254BB2E00A3EEF0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A09A2AA72254BB2E00A3EEF0 /* InfoPlist.strings */; };
 		AA9A5FECA2E668F834FDECD9 /* libPods-Endless.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 095BC7BD685DE17FADDBF166 /* libPods-Endless.a */; };
 		D919EA71FF999D55CCC96334 /* libPods-Endless Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FC10255E5E506A0C25D6276B /* libPods-Endless Tests.a */; };
 /* End PBXBuildFile section */
@@ -242,6 +243,8 @@
 		A024D5B01ECEF11A00B28CC5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Endless/de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A024D5B11ECEF11A00B28CC5 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Endless/de.lproj/OnePasswordExtension.strings; sourceTree = "<group>"; };
 		A07E147222381A8700B76F77 /* SilenceWarnings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SilenceWarnings.h; sourceTree = "<group>"; };
+		A09A2AA62254BB2E00A3EEF0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A09A2AA82254BB2F00A3EEF0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		FC10255E5E506A0C25D6276B /* libPods-Endless Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Endless Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDEC322B35C8D861612E24E3 /* Pods-Endless Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Endless Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Endless Tests/Pods-Endless Tests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -361,6 +364,7 @@
 				01D42C3B1E0A37DB00566022 /* Endless.entitlements */,
 				018333CF1A351B3B00670CD1 /* Endless-Prefix.pch */,
 				01801E961A32CA2A002B4718 /* Info.plist */,
+				A09A2AA72254BB2E00A3EEF0 /* InfoPlist.strings */,
 				01801E971A32CA2A002B4718 /* main.m */,
 				01F7CB4C1A52FC4E00F42B73 /* NSString+IPAddress.h */,
 				01F7CB4D1A52FC4E00F42B73 /* NSString+IPAddress.m */,
@@ -635,6 +639,7 @@
 				018333E91A35746500670CD1 /* https-everywhere_rules.plist in Resources */,
 				01801EC31A3360F8002B4718 /* InAppSettings.bundle in Resources */,
 				A024D5AF1ECEF10F00B28CC5 /* OnePasswordExtension.strings in Resources */,
+				A09A2AA52254BB2E00A3EEF0 /* InfoPlist.strings in Resources */,
 				01D7412C1A45F8EB007B7033 /* injected.js in Resources */,
 				01801EA61A32CA2A002B4718 /* Images.xcassets in Resources */,
 				01BFEE4A1E3D3CD60069AC83 /* urlblocker.json in Resources */,
@@ -838,6 +843,15 @@
 				A024D5B11ECEF11A00B28CC5 /* de */,
 			);
 			name = OnePasswordExtension.strings;
+			sourceTree = "<group>";
+		};
+		A09A2AA72254BB2E00A3EEF0 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A09A2AA62254BB2E00A3EEF0 /* en */,
+				A09A2AA82254BB2F00A3EEF0 /* de */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

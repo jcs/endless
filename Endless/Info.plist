@@ -121,5 +121,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Needed to store the selected image to your photos.</string>
 </dict>
 </plist>
