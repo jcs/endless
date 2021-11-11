@@ -372,8 +372,7 @@
 
 - (void)viewDidLayoutSubviews
 {
-	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-	float statusBarHeight = (UIInterfaceOrientationIsLandscape(orientation) ? 0 : [[UIApplication sharedApplication] statusBarFrame].size.height);
+	float statusBarHeight = [[UIApplication sharedApplication] statusBarFrame].size.height;
 
 	/* views are transforming and we may calculate things incorrectly here, so just ignore this request */
 	if (showingTabs)
@@ -615,8 +614,10 @@
 
 - (void)addNewTabFromToolbar:(id)_id
 {
+	UITextField *urlField = self->urlField;
+
 	[self addNewTabForURL:nil forRestoration:NO withAnimation:WebViewTabAnimationDefault withCompletionBlock:^(BOOL finished) {
-		[self->urlField becomeFirstResponder];
+		[urlField becomeFirstResponder];
 	}];
 }
 
@@ -714,8 +715,11 @@
 			else {
 				/* no tabs left, add one and zoom out */
 				[self reindexTabs];
+
+				UITextField *urlField = self->urlField;
+
 				[self addNewTabForURL:nil forRestoration:false withAnimation:WebViewTabAnimationDefault withCompletionBlock:^(BOOL finished) {
-					[self->urlField becomeFirstResponder];
+					[urlField becomeFirstResponder];
 				}];
 				return;
 			}
@@ -1218,7 +1222,9 @@
 	 * to   "Mozilla/5.0 (iPhone; CPU iPhone OS 8_4_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12H321 Safari/600.1.4"
 	 */
 
+	SILENCE_DEPRECATION_ON
 	UIWebView *twv = [[UIWebView alloc] initWithFrame:CGRectZero];
+	SILENCE_WARNINGS_OFF
 	NSString *ua = [twv stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
 	
 	NSMutableArray *uapieces = [[NSMutableArray alloc] initWithArray:[ua componentsSeparatedByString:@" "]];
